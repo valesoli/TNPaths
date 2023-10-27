@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="defaultPattern"
+              value="%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="root-appender">
+        <encoder>
+            <pattern>${defaultPattern:-}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="root-appender"/>
+    </root>
+
+    <property name="filePattern"
+              value="%d{dd/MM/yyyy HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <appender name="file-appender" class="ch.qos.logback.core.FileAppender">
+        <file>query.log</file>
+        <encoder>
+            <pattern>${filePattern:-}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="ar.edu.itba" level="INFO" additivity="false">
+        <appender-ref ref="file-appender"/>
+    </logger>
+
+    <logger name="ar.edu.itba" level="DEBUG">
+        <appender-ref ref="root-appender"/>
+    </logger>
+</configuration>

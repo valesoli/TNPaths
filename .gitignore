@@ -1,0 +1,56 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.csv
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Config & output files
+*.json
+*.txt
+*.tsv
+
+# Idea Files
+.idea/
+*.iml
+
+# Project Directories
+target/
+database/
+
+# Neo4J Docker Data
+# plugins/
+# data/
+# import/
+*.db
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+tdbg-client/gen/
+**/dependency-reduced-pom.xml
+
+/*.properties
+.vscode/
+env/
+__pycache__/

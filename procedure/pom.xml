@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ar.edu.itba</groupId>
+    <artifactId>tbdg</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>procedure</artifactId>
+  <name>procedure</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+    <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+    <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
+    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+    <neo4j.version>3.5.6</neo4j.version>
+    <neo4j-java-driver.version>1.7.2</neo4j-java-driver.version>
+    <org.junit.jupiter.version>5.5.1</org.junit.jupiter.version>
+    <org.assertj.version>3.11.1</org.assertj.version>
+    <org.mockito.version>3.1.0</org.mockito.version>
+    <net.sf.trove4j.version>3.0.3</net.sf.trove4j.version>
+    
+  </properties>
+
+  <dependencies>
+    <!-- JUnit -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${org.junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${org.assertj.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+	    <groupId>org.openjfx</groupId>
+	    <artifactId>javafx-controls</artifactId>
+	    <version>11</version>
+  	</dependency>
+
+    <!-- Neo4j Driver -->
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>25.1-jre</version>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j.test</groupId>
+      <artifactId>neo4j-harness</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.neo4j.driver</groupId>
+      <artifactId>neo4j-java-driver</artifactId>
+      <version>${neo4j-java-driver.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>procedure-compiler</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${org.mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.trove4j</groupId>
+      <artifactId>trove4j</artifactId>
+      <version>${net.sf.trove4j.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven-shade-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven-jar-plugin.version}</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>com.pg.fxapplication.Main</mainClass>
+            </manifest>
+              <manifestEntries>
+                    <Class-Path>.</Class-Path>
+                </manifestEntries>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+       <plugin>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>0.0.1</version>
+        <configuration>
+            <mainClass>HelloFX</mainClass>
+        </configuration>
+    </plugin>
+    </plugins>
+  </build>
+</project>
