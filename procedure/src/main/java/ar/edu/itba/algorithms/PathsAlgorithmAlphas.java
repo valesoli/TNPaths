@@ -4,20 +4,13 @@ import ar.edu.itba.algorithms.strategies.paths.AlphaPathsStrategy;
 import ar.edu.itba.algorithms.utils.interval.Interval;
 import ar.edu.itba.algorithms.utils.interval.IntervalNodePair;
 import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPathSensor;
-import ar.edu.itba.algorithms.utils.interval.IntervalParser;
 import ar.edu.itba.algorithms.utils.interval.IntervalSet;
 import ar.edu.itba.graph.Graph;
-//import javafx.util.Pair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
 
-
-//import org.apache.commons.lang3.tuple.Pair;
 
 import org.neo4j.logging.Log;
 
@@ -135,85 +128,6 @@ public class PathsAlgorithmAlphas extends AbstractAlgorithm<List<IntervalNodePai
         //TODO Remove extra Segments
         return this.strategy.getSolutionPaths();
     }
-    
-   
-    
-    public Long isValidSensor(Node node, IntervalSet searchIntervalSet){
-    		
-    		String sss = (String) node.getProperty("title");
-    		if (sss.equals("Sensor")) {
-    			System.out.println("El title es un Sensor " + sss);
-    			IntervalSet s1 = searchIntervalSet.intersection(new IntervalSet(IntervalParser.entityToIntervals(node)));
-    		
-    			if (!s1.isEmpty()){
-    				Long na = measuresVariable(node, searchIntervalSet);
-    				if (na != null)
-    					return na;
-    			}
-    		}
-    		return null;
-    }
-    
-
-    
-    public IntervalSet IntervalSensor(Long attID, IntervalSet searchInterval){
-	   //IntervalSet searchIntervalSet = new IntervalSet(searchInterval);
-	   	return searchInterval.intersection(getValueIntervals(attID)); 
-	   	
-	   	}
-
-    private Long measuresVariable(Node nodo, IntervalSet searchInterval)  {
-    	Long retVal = null;
-    
-    	Iterable<Relationship> n = nodo.getRelationships( RelationshipType.withName( "Edge" ), Direction.OUTGOING );
-        for (Relationship n1:n){
-        	
-        	Node na = this.db.getNodeById(n1.getEndNodeId());
-        	System.out.println("na: " + na.toString());
-        	System.out.println("en el mismo");
-        	if (na.getProperty("title").equals(this.strategy.getAttribute())){
-        		List<Interval> inter = IntervalParser.fromStringArrayToIntervals((String []) na.getProperty("interval"));
-        		IntervalSet itemp = new IntervalSet(inter);
-        		if (!itemp.intersection(searchInterval).isEmpty())
-        			retVal = na.getId();
-        	}
-         }
-        return retVal;
-    }
-    
-
-    
-    
-   private IntervalSet getValueIntervals(Long attId) {
-	   IntervalSet is = new IntervalSet();
-	   Node na = this.db.getNodeById(attId);
-	   Iterable<Relationship> nvs = na.getRelationships( RelationshipType.withName( "Edge" ), Direction.OUTGOING );
-   			for (Relationship n2:nvs){
-	           	
-	           	Node nv = this.db.getNodeById(n2.getEndNodeId());
-	           	
-	           	switch (this.strategy.getOp()){
-	           	case "=":
-	           		if (nv.getProperty("category")== this.strategy.getValue()){
-		           		List<Interval> inter = IntervalParser.fromStringArrayToIntervals((String []) nv.getProperty("interval"));
-		           		
-		           		is = new IntervalSet(inter);
-		           		return is;
-		           		//break;
-		           	}
-	           	case ">=":
-	           		if ((Long) nv.getProperty("category") >= this.strategy.getValue()){
-		           		List<Interval> inter = IntervalParser.fromStringArrayToIntervals((String []) nv.getProperty("interval"));
-		           		for (Interval i:inter){
-		           			is = is.union(i);
-		           	}
-	           	}
-	           	}
-	           	
-	           	
-               }
-       	return is;	
-       	}
        
   
 }

@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
-public class Alpha {
+public class SNAlpha {
 
     @Context
     public GraphDatabaseService db;
@@ -59,7 +59,7 @@ public class Alpha {
             throw new IllegalArgumentException(
                     "The minimum value cannot be 0 nor the maximum value can be lesser than the minimum.");
         }
-        log.info("Initializing alpha.alphaPath algorithm.");
+        log.info("Initializing consecutive.alphaPath algorithm.");
         Stopwatch timer = Stopwatch.createStarted();
         String att = (String) configuration.get("attribute");
         String op = (String) configuration.get("operator");
