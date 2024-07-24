@@ -5,13 +5,13 @@ public class AllenInterval {
 	
 	private final Interval intervalA;
 	private final Interval intervalB;
-	private final allenRel allenRel;
+	private static allenRel al = null;
 	
 
 	public AllenInterval(Interval intervalA, Interval intervalB){
 		this.intervalA = intervalA;
 		this.intervalB = intervalB;
-		this.allenRel = get_rel(intervalA,intervalB);
+		this.al = get_rel(intervalA,intervalB);
 	}
 	public Interval get_IntervalA(){
 		return this.intervalA;
@@ -20,7 +20,7 @@ public class AllenInterval {
 		return this.intervalB;
 	}
 	public allenRel get_allenRel(){
-		return this.allenRel;
+		return this.al;
 	}
 	private allenRel get_rel(Interval IntervalA, Interval IntervalB){
 		allenRel ar = allenRel.ALPHA13;
@@ -67,10 +67,15 @@ public class AllenInterval {
 		return intervalA;
 	}
 	
+	  public  static int getInverse(allenRel a) {
+			return 13-a.getValue();
+		}
+	
 	public static void main(String[] args) {
-	    Interval a = new Interval(20000L,50000L,Granularity.DATE);
+	    Interval a = new Interval(30000L,40000L,Granularity.DATE);
         Interval b = new Interval(30000L,40000L,Granularity.DATE);
         AllenInterval ai = new AllenInterval(a,b);
         System.out.println(ai.get_allenRel());
+        System.out.println( allenRel.getNameFromValue( getInverse( ai.get_allenRel()) ) );
 	}
 }

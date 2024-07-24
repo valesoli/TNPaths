@@ -9,7 +9,7 @@ import ar.edu.itba.algorithms.PathsAlgorithmAlphas;
 import ar.edu.itba.algorithms.strategies.paths.BooleanNodesIntersectionPathsStrategy;
 import ar.edu.itba.algorithms.strategies.paths.ConsecutiveSensorPathsStrategy;
 import ar.edu.itba.algorithms.strategies.paths.FlowingSensorPathsStrategy;
-import ar.edu.itba.algorithms.strategies.paths.AlphaPathsStrategy;
+import ar.edu.itba.algorithms.strategies.paths.SNAlphaPathsStrategy;
 import ar.edu.itba.algorithms.strategies.paths.NodesIntersectionPathsStrategy;
 import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPath;
 import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPathSensor;
@@ -46,9 +46,9 @@ public class SNAlpha {
     @Context
     public Log log;
     
-    @Procedure(value="alpha.alphaPath")
-    @Description("Get all the alpha paths of n or less sensors from a node where those nodes measures the variable")
-    public Stream<TemporalPathIntervalListRecordAlpha> alphaPath(
+    @Procedure(value="alpha.SNalphaPath")
+    @Description("Get all the alpha paths of n or less edges from a node")
+    public Stream<TemporalPathIntervalListRecord> coTemporalPaths(
             @Name("node query") Node node,
             @Name("ending node") Node endingNode,
             @Name("minimum length") Long min,
@@ -59,36 +59,19 @@ public class SNAlpha {
             throw new IllegalArgumentException(
                     "The minimum value cannot be 0 nor the maximum value can be lesser than the minimum.");
         }
-        log.info("Initializing consecutive.alphaPath algorithm.");
-        Stopwatch timer = Stopwatch.createStarted();
-        String att = (String) configuration.get("attribute");
-        String op = (String) configuration.get("operator");
-        String val = (String) configuration.get("category");
-        String delta = (String) configuration.get("delta");
-        
+        log.info("Initializing alpha.SNAlphaPath algorithm.");
+        Stopwatch timer = Stopwatch.createStarted();       
         Graph graph = new GraphBuilder(db).buildStored(new ProcedureConfiguration(configuration), false);
-        PathsAlgorithmAlphas algorithm = new PathsAlgorithmAlphas(graph,db)
-                .setStrategy(new AlphaPathsStrategy(db, min, max, att, op, Long.valueOf(val), 
-                		Duration.parse(delta), log))
+        PathsAlgorithm algorithm = new PathsAlgorithm(graph)
+                .setStrategy(new SNAlphaPathsStrategy(min, max, log))
                 .setLog(log)
                 .setInitialNode(node)
                 .setEndingNode(endingNode);
-        List<IntervalNodePairPathSensor> result = algorithm.run();
+        List<IntervalNodePairPath> result = algorithm.run();
 
         timer.stop();
-        System.out.println("Sale y va a solutions. Size = " + String.valueOf(result.size()));
-        System.out.println("Resultado: "+result.toString());
-
-        
-        log.info(String.format("alphaPath algorithm finished in %sms", (timer.elapsed().toNanos() / (double) 1000000)));
+        log.info(String.format("SNAlpha algorithm finished in %sms", (timer.elapsed().toNanos() / (double) 1000000)));
         log.info(String.format("Nodes expanded %d.", algorithm.getStrategy().getNodesExpanded()));
 
-        Stream<TemporalPathIntervalListRecordAlpha> res= TemporalPathIntervalListRecordAlpha.getRecordsFromSolutionAlphaList(result, db, graph.getGranularity(),att);
-
-        return res;
-    }
-    
-    
-
-   
+        return TemporalPathIntervalListRecord.getRecordsFromSolutionList(result, db, graph.getGranularity());    }
 }
