@@ -11,7 +11,6 @@ import ar.edu.itba.algorithms.utils.interval.IntervalSet;
 import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 
@@ -28,6 +27,7 @@ public class AlphaPathsStrategy extends IntervalSetPathSensorStrategy {
 	private final String op;
     private final Long value;
     private final Duration delta;
+    private final List<Integer> exclude;
     protected GraphDatabaseService db;
     protected final List<IntervalNodePairPathSensor> sensorSolutions = new LinkedList<>();
     Queue<IntervalNodePairPathSensor> newSensorFrontier = new LinkedList<>();
@@ -40,8 +40,19 @@ public class AlphaPathsStrategy extends IntervalSetPathSensorStrategy {
         this.value = val;
         this.delta = delta;
         this.db = db;
+        this.exclude=null;
     }
-
+    
+    public AlphaPathsStrategy(GraphDatabaseService db, Long minimumLength, Long maximumLength, 
+    		String att, String op, Long val, Duration delta, List<Integer> exclude, Log log) {
+        super(minimumLength, maximumLength, log);
+        this.attribute = att;
+        this.op = op;
+        this.value = val;
+        this.delta = delta;
+        this.db = db;
+        this.exclude=exclude;
+    }
     
     public IntervalSet getIntervalSensorSet(IntervalSet node, IntervalSet expandingValue) {
         return expandingValue.intersectAndReturnThisIntervals(node);
@@ -65,6 +76,11 @@ public class AlphaPathsStrategy extends IntervalSetPathSensorStrategy {
     } 
     public String getOp(){
     	return this.op;
+    }
+    
+    public List<Integer> getExclude(){
+    	if (this.exclude==null) return null;
+    	return this.exclude;
     }
     
     public void addToFrontierSensor(IntervalNodePairPathSensor node) {

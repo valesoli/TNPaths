@@ -14,7 +14,11 @@ import org.neo4j.graphdb.Node;
 
 import org.neo4j.logging.Log;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -71,7 +75,6 @@ public class PathsAlgorithmAlphas extends AbstractAlgorithm<List<IntervalNodePai
     		System.out.println("Must start from a Sensor Node");
     		return null;
     	}
-    	System.out.println("Va a getValueIntervals");
     	IntervalNodePair otherPair;
     	
     	IntervalNodePair tempis = this.strategy.getValueIntervals(naId, 
@@ -80,8 +83,6 @@ public class PathsAlgorithmAlphas extends AbstractAlgorithm<List<IntervalNodePai
         			this.graph.getBetweenInterval());
         	
     	if (tempis.getIntervalSet() == null) return null;
-    	//IntervalSet is = tempis.getKey().inIntersection(this.graph.getBetweenInterval());
-    	System.out.println("sigue1");
     	this.strategy.addToFrontier(
                 new IntervalNodePairPathSensor(inode.getId(), tempis.getIntervalSet(), true, tempis.getNode(), 1L, 1L)
         );
@@ -89,38 +90,36 @@ public class PathsAlgorithmAlphas extends AbstractAlgorithm<List<IntervalNodePai
     	//Initialize with the search interval so far
         while (!this.strategy.isFinished()) {
         	IntervalNodePairPathSensor currentPair = this.strategy.getNext();
-        	//System.out.println("currentPair " + currentPair.toString1());                    
             List<Pair<List<Interval>, Long>> lista = this.graph.getRelationshipsFromNode(currentPair.getNode());
+            
           	for(Pair<List<Interval>, Long> interval:lista) {
-          
-	          	Node otherNode = this.db.getNodeById(interval.getRight());
+              	Node otherNode = this.db.getNodeById(interval.getRight());
 	          	naId = this.strategy.measuresVariable(otherNode);
-	          	System.out.println(naId);
 	          	if (this.strategy.isSensor(otherNode) && (naId != null)) {
-	          		boolean comp1 = false;
-	          		//Only the useful intervals remain
-	          		IntervalSet is1 = currentPair.getIntervalSet().inIntersection(this.graph.getBetweenInterval());
-	          		System.out.println("currentPair " + currentPair.toString1());
-	          		for (Interval i1:is1.getIntervals()){
-	          			
-	          			//Only the useful intervals remain
-	          			otherPair = this.strategy.getValueIntervals(naId, currentPair.getCategory(), i1, this.graph.getBetweenInterval());
+	          	  		boolean comp1 = false;
+		          		//Only the useful intervals remain
+		          		IntervalSet is1 = currentPair.getIntervalSet().inIntersection(this.graph.getBetweenInterval());
+		          		System.out.println("currentPair " + currentPair.toString1());
+		          		for (Interval i1:is1.getIntervals()){
 		          			
-		          		if (otherPair.getIntervalSet() != null){
-			          			IntervalSet is2 = otherPair.getIntervalSet().inIntersection(this.graph.getBetweenInterval());
-			          			for (Interval i2:is2.getIntervals()){
-			          				comp1 = i1.compareDelta(i2, this.strategy.getDelta());
-			          				if (comp1) {
-			          					this.strategy.expandFrontierSensor(i2, currentPair, interval.getRight(),otherPair.getNode());
-			          				}         				
+		          			//Only the useful intervals remain
+		          			otherPair = this.strategy.getValueIntervals(naId, currentPair.getCategory(), i1, this.graph.getBetweenInterval());
+			          			
+			          		if (otherPair.getIntervalSet() != null){
+				          			IntervalSet is2 = otherPair.getIntervalSet().inIntersection(this.graph.getBetweenInterval());
+				          			for (Interval i2:is2.getIntervals()){
+				          				comp1 = i1.compareDelta(i2, this.strategy.getDelta());
+				          				if (comp1) {
+				          					this.strategy.expandFrontierSensor(i2, currentPair, interval.getRight(),otherPair.getNode());
+				          				}         				
+				          			}
 			          			}
-		          			}
 		          		
-	          		}
-	          	}
-	          	else {
+		          		}
+	          	   	}
+	          	else 
 	          			this.strategy.expandFrontier(interval.getLeft(), currentPair, interval.getRight());
-	          		}
+	          		
 	                    
             }            
             currentPair.setPreviousNodes(null);
@@ -129,5 +128,5 @@ public class PathsAlgorithmAlphas extends AbstractAlgorithm<List<IntervalNodePai
         return this.strategy.getSolutionPaths();
     }
        
-  
+
 }

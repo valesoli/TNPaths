@@ -367,6 +367,10 @@ public class GrammarListener extends TempoGraphBaseListener {
         }
     }
 
+	@Override public void exitSncondition(TempoGraphParser.SnconditionContext ctx) { 
+		
+	}
+	
     @Override public void enterWhere_connector(TempoGraphParser.Where_connectorContext ctx) {
         connectorContext = ctx;
         if (removeNextConnector) {
@@ -481,9 +485,9 @@ public class GrammarListener extends TempoGraphBaseListener {
     	cyOut.setFunctionType(FunctionType.FPATH);
     }
     
-
-    @Override public void enterAlpha(TempoGraphParser.AlphaContext ctx){
-        cyOut.setFunctionType(FunctionType.ALPHA);
+    public void enterSnalphapath(TempoGraphParser.SnalphapathContext ctx)
+    {
+        cyOut.setFunctionType(FunctionType.SNALPHA);
     }
 	
 	
@@ -527,11 +531,12 @@ public class GrammarListener extends TempoGraphBaseListener {
     	 String functionName;
          
     	 if (ctx.FBPATH() != null) functionName = ctx.FBPATH().getText();
-         else if (ctx.RSCPATH() != null) functionName = ctx.RSCPATH().getText();
-         else if (ctx.ALPHAPATH() != null) {
-        	 functionName = ctx.ALPHAPATH().getText();
+         else 
+        	 if (ctx.RSCPATH() != null) functionName = ctx.RSCPATH().getText();
+         /*else if (ctx.SNALPHAPATH() != null) {
+        	 functionName = ctx.SNALPHAPATH().getText();
         	 cyOut.setFunctionType(FunctionType.CPATH);
-         }
+         }*/
          	else functionName = ctx.FPATH().getText();
     	 
          if (!(ctx.parent instanceof TempoGraphParser.F_callContext))
@@ -558,9 +563,9 @@ public class GrammarListener extends TempoGraphBaseListener {
          cyOut.unsetFunctionType();
      }
 
-    @Override public void exitAlpha(TempoGraphParser.AlphaContext ctx) { 
+    @Override public void exitSnalphapath(TempoGraphParser.SnalphapathContext ctx) { 
     	
-   	 	String functionName = ctx.ALPHAPATH().getText();
+   	 	String functionName = ctx.SNALPHAPATH().getText();
        	 
         if (!(ctx.parent instanceof TempoGraphParser.F_callContext))
             functionName += CypherOutputGenerator.BOOL;

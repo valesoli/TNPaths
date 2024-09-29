@@ -2,10 +2,11 @@ package ar.edu.itba.procedures.alpha;
 
 import ar.edu.itba.algorithms.PathsAlgorithm;
 import ar.edu.itba.algorithms.PathsAlgorithmAttribute;
-import ar.edu.itba.algorithms.PathsAlgorithmAttributeNode;
+/*import ar.edu.itba.algorithms.PathsAlgorithmAttributeNode;
 import ar.edu.itba.algorithms.PathsAlgorithmSensorConsecutive;
 import ar.edu.itba.algorithms.PathsAlgorithmSensorFlowing;
-import ar.edu.itba.algorithms.PathsAlgorithmAlphas;
+import ar.edu.itba.algorithms.PathsAlgorithmAlphas;*/
+import ar.edu.itba.algorithms.PathsAlgorithmSNAlpha;
 import ar.edu.itba.algorithms.strategies.paths.BooleanNodesIntersectionPathsStrategy;
 import ar.edu.itba.algorithms.strategies.paths.ConsecutiveSensorPathsStrategy;
 import ar.edu.itba.algorithms.strategies.paths.FlowingSensorPathsStrategy;
@@ -48,7 +49,7 @@ public class SNAlpha {
     
     @Procedure(value="alpha.SNalphaPath")
     @Description("Get all the alpha paths of n or less edges from a node")
-    public Stream<TemporalPathIntervalListRecord> coTemporalPaths(
+    public Stream<TemporalPathIntervalListRecordAlpha> SNAlpha(
             @Name("node query") Node node,
             @Name("ending node") Node endingNode,
             @Name("minimum length") Long min,
@@ -62,7 +63,7 @@ public class SNAlpha {
         log.info("Initializing alpha.SNAlphaPath algorithm.");
         Stopwatch timer = Stopwatch.createStarted();       
         Graph graph = new GraphBuilder(db).buildStored(new ProcedureConfiguration(configuration), false);
-        PathsAlgorithm algorithm = new PathsAlgorithm(graph)
+        PathsAlgorithmSNAlpha algorithm = new PathsAlgorithmSNAlpha(graph)
                 .setStrategy(new SNAlphaPathsStrategy(min, max, log))
                 .setLog(log)
                 .setInitialNode(node)
@@ -72,6 +73,6 @@ public class SNAlpha {
         timer.stop();
         log.info(String.format("SNAlpha algorithm finished in %sms", (timer.elapsed().toNanos() / (double) 1000000)));
         log.info(String.format("Nodes expanded %d.", algorithm.getStrategy().getNodesExpanded()));
-
-        return TemporalPathIntervalListRecord.getRecordsFromSolutionList(result, db, graph.getGranularity());    }
+        
+        return TemporalPathIntervalListRecordAlpha.getRecordsFromSolutionSNAlphaList(result, db, graph.getGranularity());    }
 }

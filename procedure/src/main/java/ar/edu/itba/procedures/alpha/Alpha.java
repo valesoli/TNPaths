@@ -16,6 +16,7 @@ import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPathSensor;
 import ar.edu.itba.config.ProcedureConfiguration;
 import ar.edu.itba.graph.Graph;
 import ar.edu.itba.graph.GraphBuilder;
+import ar.edu.itba.graph.impl.FullStoredGraph;
 import ar.edu.itba.records.BooleanRecord;
 import ar.edu.itba.records.TemporalPathIntervalListRecordAlpha;
 import ar.edu.itba.records.TemporalPathIntervalListRecord;
@@ -65,8 +66,10 @@ public class Alpha {
         String op = (String) configuration.get("operator");
         String val = (String) configuration.get("category");
         String delta = (String) configuration.get("delta");
-        
-        Graph graph = new GraphBuilder(db).buildStored(new ProcedureConfiguration(configuration), false);
+        ProcedureConfiguration pconf = new ProcedureConfiguration(configuration);
+        List<Integer> eList = pconf.getExcludeList();
+
+        Graph graph = new GraphBuilder(db).buildStored(pconf, false);
         PathsAlgorithmAlphas algorithm = new PathsAlgorithmAlphas(graph,db)
                 .setStrategy(new AlphaPathsStrategy(db, min, max, att, op, Long.valueOf(val), 
                 		Duration.parse(delta), log))
@@ -82,8 +85,9 @@ public class Alpha {
         
         log.info(String.format("alphaPath algorithm finished in %sms", (timer.elapsed().toNanos() / (double) 1000000)));
         log.info(String.format("Nodes expanded %d.", algorithm.getStrategy().getNodesExpanded()));
-
-        Stream<TemporalPathIntervalListRecordAlpha> res= TemporalPathIntervalListRecordAlpha.getRecordsFromSolutionAlphaList(result, db, graph.getGranularity(),att);
+        Boolean direction = (configuration.get("direction")=="outgoing");
+        Stream<TemporalPathIntervalListRecordAlpha> res= TemporalPathIntervalListRecordAlpha.getRecordsFromSolutionAlphaList
+        		(result, db, graph.getGranularity(), att,direction,eList);
 
         return res;
     }

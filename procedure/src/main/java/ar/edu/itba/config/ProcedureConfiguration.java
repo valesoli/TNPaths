@@ -8,6 +8,9 @@ import ar.edu.itba.config.constants.ProjectionType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * This class wraps the configuration object received by the Neo4J procedure.
@@ -103,5 +106,28 @@ public class ProcedureConfiguration {
         );
         if (intervalStr == null) { return null; }
         return IntervalParser.fromString(intervalStr);
+    }
+    
+    public List<Integer> getExcludeList(){
+    	
+    	/*List<Integer> a = new ArrayList(Arrays.asList( config.getOrDefault(ConfigurationFieldNames.EXCLUDE,null)));*/
+    	List<Integer> a = new ArrayList<>((List<Integer>) config.getOrDefault(ConfigurationFieldNames.EXCLUDE,
+    			new ArrayList<>(Arrays.asList())));
+    	if (a.size()==0)
+    		return null;
+        return a; 
+    	
+    }
+    
+    public static void main(String[] args) {
+    	List<Integer> a = new ArrayList<>(Arrays.asList(2));
+    	Map<String, Object> temp = new HashMap<>();
+    	temp.put("exclude", a);
+    	temp.put("between", "a");
+    	System.out.println(temp);
+    	Long i = 3L;
+    	--i;
+    	System.out.println(a.contains((int)(long)i));
+    	
     }
 }

@@ -58,7 +58,7 @@ public abstract class Graph {
      * @return A List of Pair that represents all the relationships that starts in the source node
      */
     public abstract List<Interval> getRelationshipsFromNodeToOther(Long source, Long target);
-
+    
     protected List<Interval> filterByInterval(List<Interval> intervalSet) {
         if (this.betweenInterval != null) {
             return intervalSet.stream().filter(

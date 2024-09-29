@@ -29,7 +29,8 @@ public abstract class InBaseGraph extends Graph {
         this.edgeInterval = edgeInterval;
         this.direction = this.fromDirectionType(directionType);
     }
-
+    
+ 
     private Direction fromDirectionType(DirectionType type) {
         switch (type) {
             case BOTH:
@@ -52,5 +53,6 @@ public abstract class InBaseGraph extends Graph {
     public Granularity getGranularity() {
         return this.granularity;
     }
+
 
 }

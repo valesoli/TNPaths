@@ -100,7 +100,7 @@ public abstract class IntervalSetPathStrategy implements Strategy<IntervalNodePa
         );
         if (interval.isEmpty()) { return; }
         IntervalNodePairPath path = new IntervalNodePairPath(otherNodeId, interval, node.getLength() + 1);
-        path.setPrevious(node);
+        path.setPrevious(node);     
         Set<Long> previousNodes = node.copyPreviousNodes();
         previousNodes.add(otherNodeId);
         path.setPreviousNodes(previousNodes);

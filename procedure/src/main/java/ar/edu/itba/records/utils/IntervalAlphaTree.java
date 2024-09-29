@@ -2,6 +2,7 @@ package ar.edu.itba.records.utils;
 
 import ar.edu.itba.algorithms.utils.interval.Granularity;
 import ar.edu.itba.algorithms.utils.interval.Interval;
+import ar.edu.itba.algorithms.utils.interval.IntervalParser;
 import ar.edu.itba.algorithms.utils.interval.IntervalSet;
 import ar.edu.itba.records.AlphaResult;
 import ar.edu.itba.algorithms.utils.interval.allenRel;
@@ -11,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Arrays;
 
 public class IntervalAlphaTree {
 
@@ -24,14 +27,37 @@ public class IntervalAlphaTree {
     public void getNextNodes(IntervalSet intervalSet) {
         List<IntervalAlphaTreeNode> newDepthLeaves = new LinkedList<>();
         for (IntervalAlphaTreeNode node: sameDepthLeaves) {
-            intervalSet.getIntervals().forEach(
-                    longInterval -> newDepthLeaves.add(new IntervalAlphaTreeNode(longInterval, node))
-            );
+            /*intervalSet.getIntervals().forEach(
+                    longInterval -> newDepthLeaves.add(new IntervalAlphaTreeNode(longInterval, node)));*/
+        	for (Interval longInterval:intervalSet.getIntervals()) {
+        		
+        		IntervalAlphaTreeNode iatn = new IntervalAlphaTreeNode(longInterval, node);
+        		newDepthLeaves.add(iatn);
+        		System.out.print("[" +iatn.getInterval().toString() + "] Padre -> ");
+        		System.out.print("[" + iatn.getParent().toString() + "] Alpha -> ");
+        		System.out.println(iatn.getAlpha());
+        	}
         }
         sameDepthLeaves = newDepthLeaves;
     }
 
-    public AlphaResult getPaths(Granularity granularity) {
+    public void getNextNodes(IntervalSet intervalSet, Boolean out) {
+        List<IntervalAlphaTreeNode> newDepthLeaves = new LinkedList<>();
+        for (IntervalAlphaTreeNode node: sameDepthLeaves) {
+            /*intervalSet.getIntervals().forEach(
+                    longInterval -> newDepthLeaves.add(new IntervalAlphaTreeNode(longInterval, node)));*/
+        	for (Interval longInterval:intervalSet.getIntervals()) {
+        		
+        		IntervalAlphaTreeNode iatn = new IntervalAlphaTreeNode(longInterval, node, out);
+        		newDepthLeaves.add(iatn);
+        		System.out.print("[" +iatn.getInterval().toString() + "] Padre -> ");
+        		System.out.print("[" + iatn.getParent().toString() + "] Alpha -> ");
+        		System.out.println(iatn.getAlpha());
+        	}
+        }
+        sameDepthLeaves = newDepthLeaves;
+    }
+    public AlphaResult getPaths(Granularity granularity, Boolean out) {
         List<List<IntervalAlphaTreeNode>> paths = new ArrayList<>(sameDepthLeaves.size());
         sameDepthLeaves.forEach(unused_ -> paths.add(new LinkedList<>()));
         List<IntervalAlphaTreeNode> nodes = sameDepthLeaves;
@@ -59,12 +85,76 @@ public class IntervalAlphaTree {
             }).collect(Collectors.toList())
         ).collect(Collectors.toList());
         
-        List<List<String>> st_alpha = paths.stream().map(path -> path.stream().map(node -> {
+       /* List<List<String>> st_alpha = paths.stream().map(path -> path.stream().map(node -> {
             return node.getAlpha()
             ;
         }).collect(Collectors.toList())
     ).collect(Collectors.toList());
+        */
+        List<List<String>> st_alphas = new ArrayList<>();
+        for (List<IntervalAlphaTreeNode> path:paths) {
+        	List<String> st_alpha = new ArrayList<>();
+        	for (IntervalAlphaTreeNode node:path) {	
+        		String alpha = node.getAlpha();
+        		if (alpha != null)
+        			st_alpha.add(alpha);
+        		}
+        	if (out)
+        		st_alphas.add(st_alpha);
+        	else {
+        		Collections.reverse(st_alpha);
+        		st_alphas.add(st_alpha);
+        	}
+        		
+        }	
         
-        return new AlphaResult(st_inter,st_alpha);
+        return new AlphaResult(st_inter,st_alphas);
     }
+    
+    
+    public AlphaResult getSNAlphaPaths(Granularity granularity) {
+        List<List<IntervalAlphaTreeNode>> paths = new ArrayList<>(sameDepthLeaves.size());
+        sameDepthLeaves.forEach(unused_ -> paths.add(new LinkedList<>()));
+        List<IntervalAlphaTreeNode> nodes = sameDepthLeaves;
+        while (!nodes.isEmpty()) {
+            List<IntervalAlphaTreeNode> nextNodes = new LinkedList<>();
+            AtomicInteger i = new AtomicInteger();
+            nodes.forEach(node -> {
+                List<IntervalAlphaTreeNode> path = paths.get(i.get());
+                path.add(node);
+                if (node.getParent() != null) {
+                    nextNodes.add(node.getParent());
+                }
+                i.getAndIncrement();
+            });
+            nodes = nextNodes;
+        }
+
+        List<List<String>> st_inter = paths.stream().map(path -> path.stream().map(node -> {
+                Interval interval = node.getInterval();
+                return new Interval(
+                        interval.getStart(),
+                        interval.getEnd(),
+                        granularity
+                ).toString();
+                
+            }).collect(Collectors.toList())
+        ).collect(Collectors.toList());
+        
+        List<List<String>> st_alphas = new ArrayList<>();
+        for (List<IntervalAlphaTreeNode> path:paths) {
+        	List<String> st_alpha = new ArrayList<>();
+        	for (IntervalAlphaTreeNode node:path) {	
+        		String alpha = node.getAlpha();
+        		if (alpha != null)
+        			st_alpha.add(alpha);
+        		}
+        	st_alphas.add(st_alpha);
+        }		
+   
+      return new AlphaResult(st_inter,st_alphas);
+    }
+    
+   
+  
 }

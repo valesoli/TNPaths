@@ -71,6 +71,7 @@ public class IntervalNodePairPath extends IntervalNodePair {
         return ids.toString();
     }
 
+
     public boolean hasRepeated() {
         Set<Long> elements = new HashSet<>();
         for (IntervalNodePairPath curr = this; curr != null; curr = curr.previous) {

@@ -16,6 +16,7 @@ public class FullStoredGraph extends FullGraph {
 
     private final QueuedCachedGraph cachedGraph = new QueuedCachedGraph();
 
+
     public FullStoredGraph(
             GraphDatabaseService db,
             String nodeInterval,
@@ -25,7 +26,7 @@ public class FullStoredGraph extends FullGraph {
             boolean pruneNotBetween) {
         super(db, nodeInterval, edgeInterval, directionType, betweenInterval, pruneNotBetween);
     }
-
+    
     @Override
     public List<Pair<List<Interval>, Long>> getRelationshipsFromNode(Long source) {
         if (cachedGraph.containsNode(source)) {
@@ -45,5 +46,6 @@ public class FullStoredGraph extends FullGraph {
         this.cachedGraph.setEdgesFromSourceAndTarget(source, target, list);
         return list;
     }
-
+    
+ 
 }

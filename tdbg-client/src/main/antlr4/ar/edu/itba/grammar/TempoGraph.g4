@@ -32,7 +32,8 @@ where_clause        :   WHERE WS where_conditions;
 
 where_conditions    :   where_conditions where_connector where_conditions
                     |   (LPAREN WS? where_conditions WS? RPAREN)
-                    |   condition ;
+                    |   condition
+                    |   sncondition_clause;
 
 when_clause         :   WHEN WS match_clause (WS where_clause)? ;
 
@@ -40,17 +41,19 @@ snapshot_clause     :   SNAPSHOT WS time_value_with_now ;
 
 between_clause      :   BETWEEN WS time_value WS AND WS time_value_with_now ;
 
+sncondition_clause  :   ALL WS sncondition;
+
 limit_clause        :   LIMIT WS U_INTEGER ;
 
 skip_clause         :   SKIP_S WS U_INTEGER ;
 
-f_call              :   WORD WS? EQ WS? (cpath | latest | fastest | earliest | shortest| rspath| alpha) ;
+f_call              :   WORD WS? EQ WS? (cpath | latest | fastest | earliest | shortest| rspath | snalphapath) ;
 
 cpath               :   (CPATH | PAIRCPATH | CPATH2) WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? WS? RPAREN ;
 
-rspath              :   (FPATH | FBPATH | RSCPATH | ALPHAPATH ) WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? (WS? COMMA WS? attribute)? (WS? COMMA WS? operator)? (WS? COMMA WS? category)? (WS? COMMA WS? delta)? WS? RPAREN ;
+rspath              :   (FPATH | FBPATH | RSCPATH) WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? (WS? COMMA WS? attribute)? (WS? COMMA WS? operator)? (WS? COMMA WS? category)? (WS? COMMA WS? delta)? WS? RPAREN ;
 
-alpha              	:   ALPHAPATH  WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? (WS? COMMA WS? attribute)? (WS? COMMA WS? operator)? (WS? COMMA WS? category)? (WS? COMMA WS? delta)? WS? RPAREN ;
+snalphapath        	:   SNALPHAPATH WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? (WS? COMMA WS? attribute)? (WS? COMMA WS? operator)? (WS? COMMA WS? category)? (WS? COMMA WS? delta)? WS? RPAREN ;
 
 latest              :   (LATESTDEPARTURE | LATESTARRIVAL) WS? LPAREN WS? endpoints_args (WS? COMMA WS? time_value)? WS? RPAREN ;
 
@@ -88,6 +91,8 @@ select_exp          :   (attr alias?) | WORD | (select_fstruct alias?) | (id_cal
 
 select_fstruct      :   ((WORD DOT WORD LBRACKET U_INTEGER RBRACKET) | (index_accessor LPAREN WORD DOT WORD RPAREN)) (DOT WORD (LBRACKET U_INTEGER RBRACKET)?)* ;
 
+all_fstruct         :   (WORD DOT WORD DOT WORD DOT WORD) ;
+
 index_accessor      :   HEAD | LAST ;
 
 aggr                :   sum ;
@@ -105,6 +110,8 @@ alias               :   WS AS WS WORD ;
 where_connector     :   WS (AND | OR) WS ;
 
 condition           :   (value WS? relop WS? value) | where_fcall_bool ;
+
+sncondition         :   (all_fstruct WS? relop WS? value) ;
 
 where_fcall_bool    :   cpath ;
 
@@ -181,6 +188,7 @@ fragment Y          :   'Y' | 'y' ;
 fragment Z          :   'Z' | 'z' ;
 
 FOR                 :   F O R ;
+ALL                 :   A L L ;
 SIZE                :   S I Z E ;
 SUM                 :   S U M ;
 ID                  :   I D ;
@@ -199,7 +207,7 @@ FASTEST             :   F A S T E S T P A T H ;
 SHORTEST            :   S H O R T E S T P A T H ;
 LATESTDEPARTURE     :   L A T E S T D E P A R T U R E P A T H ;
 LATESTARRIVAL       :   L A T E S T A R R I V A L P A T H ;
-ALPHAPATH			:	A L P H A P A T H ;
+SNALPHAPATH			:	S N A L P H A P A T H ;
 SELECT              :   S E L E C T ;
 AS                  :   A S ;
 MATCH               :   M A T C H ;

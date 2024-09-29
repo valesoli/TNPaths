@@ -32,4 +32,17 @@ public class IntervalStringifier {
         else endString = formatter.format(end);
         return String.format("%s — %s", formatter.format(start), endString);
     }
+    public static String getStart(String interval) {
+    	Integer hyph = interval.indexOf(" — ");
+    	return interval.substring(0,hyph);
+    }
+    public static String getEnd(String interval) {
+    	Integer hyph = interval.indexOf(" — ");
+    	return interval.substring(hyph+3, interval.length());
+    }
+    
+    public static void main(String[] args) {
+    	System.out.println(getStart("2019 — 2022").length());
+    	System.out.println(getEnd("2019 — 2022"));
+    }
 }

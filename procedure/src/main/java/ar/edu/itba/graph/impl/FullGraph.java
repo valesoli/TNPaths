@@ -21,6 +21,7 @@ public class FullGraph extends InBaseGraph {
         super(db, nodeInterval, edgeInterval, directionType, betweenInterval, pruneNotBetween);
     }
 
+       
     private List<Interval> getIntervals(Relationship relationship) {
         if (!relationship.hasProperty(this.edgeInterval)) { return null; }
         String[] intervalString = (String[]) relationship.getProperty(this.edgeInterval);

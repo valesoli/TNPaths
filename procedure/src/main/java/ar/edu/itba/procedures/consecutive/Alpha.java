@@ -82,7 +82,7 @@ public class Alpha {
         log.info(String.format("alphaPath algorithm finished in %sms", (timer.elapsed().toNanos() / (double) 1000000)));
         log.info(String.format("Nodes expanded %d.", algorithm.getStrategy().getNodesExpanded()));
 
-        return TemporalPathIntervalListRecordAlpha.getRecordsFromSolutionAlphaList(result, db, graph.getGranularity(),att);
+        return TemporalPathIntervalListRecordAlpha.getRecordsFromSolutionAlphaList(result, db, graph.getGranularity(), att, true, null);
     }
     
     

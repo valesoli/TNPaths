@@ -53,7 +53,7 @@ public class CypherOutputGenerator {
     public static final String FUNCTION_CPATH_EXISTS = FUNCTION_CPATH + BOOL;
     public static final String FUNCTION_PAIR_CPATH = "paircpath";
     public static final String FUNCTION_PAIR_CPATH_EXISTS = FUNCTION_PAIR_CPATH + BOOL;
-    public static final String FUNCTION_ALPHA = "alphapath";
+    public static final String FUNCTION_SNALPHA = "snalphapath";
 
 
     private static final String TEMPORAL = "temporal";
@@ -69,7 +69,7 @@ public class CypherOutputGenerator {
     public static final String PROCEDURE_LATEST_ARRIVAL = CONSECUTIVE + CharConstants.POINT + "latestArrival";
     public static final String PROCEDURE_SENSOR_FLOWING = CONSECUTIVE + CharConstants.POINT + "sensorFlowing";
     public static final String PROCEDURE_SENSOR_FLOWING_BACKWARDS = CONSECUTIVE + CharConstants.POINT + "sensorFlowingBackwards";
-    public static final String PROCEDURE_ALPHA = ALPHA + CharConstants.POINT + "alphaPath";
+    public static final String PROCEDURE_SNALPHA = ALPHA + CharConstants.POINT + "alphaPath";
 
     private static final String COEXISTING = "coexisting";
     private static final String COTEMPORAL_PATHS = "coTemporalPaths";
@@ -607,8 +607,8 @@ public class CypherOutputGenerator {
                 procedureName = PROCEDURE_SENSOR_CPATH;
                 functionReturn = new String[]{PATH, INTERVAL};
                 break; 
-            case FUNCTION_ALPHA:
-                procedureName = PROCEDURE_ALPHA;
+            case FUNCTION_SNALPHA:
+                procedureName = PROCEDURE_SNALPHA;
                 functionReturn = new String[]{PATH, INTERVALS, ALPHAS};
                 break; 
             default:
@@ -1008,7 +1008,7 @@ public class CypherOutputGenerator {
                 || function.toLowerCase().equals(FUNCTION_CPATH2) 
                 || function.toLowerCase().equals(FUNCTION_SENSOR_FLOWING_BACKWARDS) 
                 || function.toLowerCase().equals(FUNCTION_SENSOR_FLOWING)
-                || function.toLowerCase().equals(FUNCTION_ALPHA)
+                || function.toLowerCase().equals(FUNCTION_SNALPHA)
                 || function.toLowerCase().equals(FUNCTION_SENSOR_CPATH);
     }
 

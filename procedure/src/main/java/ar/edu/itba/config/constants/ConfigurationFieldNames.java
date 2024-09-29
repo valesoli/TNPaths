@@ -19,6 +19,7 @@ public class ConfigurationFieldNames {
     public static final String VALUE = "value";
     public static final String PERIOD = "period";
     public static final String ALPHAS = "alphas";
+    public static final String EXCLUDE = "exclude";
     
 
     private ConfigurationFieldNames() {
