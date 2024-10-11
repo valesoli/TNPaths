@@ -20,7 +20,8 @@ public class ProcedureConfiguration {
     private static final String OPERATOR = "operator";
     private static final String CATEGORY = "category";
     private static final String DELTA = "delta";
-
+    private static final String EXCLUDE = "exclude";
+    
     private Map<String, String> args = new HashMap<>();
     private TempoGraphParser.Endpoints_argsContext ctx;
     private Long minLength;
@@ -100,7 +101,6 @@ public class ProcedureConfiguration {
         args.put(key, "'" + value + "'");
     }
     
-
     public void addTemporalInterval(final String interval) {
         this.addStringParam(BETWEEN, interval);
     }
@@ -121,6 +121,10 @@ public class ProcedureConfiguration {
         this.addStringParam(DELTA, delta);
     }
 
+    public void addExclude(final String excludeList) {
+        this.addStringParam(EXCLUDE, excludeList);
+    }
+    
     public String getConfigurationString() {
         StringBuilder sb = new StringBuilder();
         sb.append(CharConstants.OPENING_BRACKET);

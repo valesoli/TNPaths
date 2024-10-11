@@ -48,11 +48,12 @@ public class CypherOutputGenerator {
     public static final String FUNCTION_CPATH = "cpath";
     public static final String FUNCTION_SENSOR_FLOWING = "fpath";
     public static final String FUNCTION_SENSOR_FLOWING_BACKWARDS = "fbpath";
-    public static final String FUNCTION_SENSOR_CPATH = "rscpath";
+    public static final String FUNCTION_SENSOR_CPATH = "sncpath";
     public static final String FUNCTION_CPATH2 = "cpath2";
     public static final String FUNCTION_CPATH_EXISTS = FUNCTION_CPATH + BOOL;
     public static final String FUNCTION_PAIR_CPATH = "paircpath";
     public static final String FUNCTION_PAIR_CPATH_EXISTS = FUNCTION_PAIR_CPATH + BOOL;
+    public static final String FUNCTION_ALPHA = "alphapath";
     public static final String FUNCTION_SNALPHA = "snalphapath";
 
 
@@ -62,6 +63,7 @@ public class CypherOutputGenerator {
 
     private static final String CONSECUTIVE = "consecutive";
     private static final String ALPHA = "alpha";
+    public static final String PROCEDURE_ALPHA = ALPHA + CharConstants.POINT + "SNalphaPath";
     public static final String PROCEDURE_EARLIEST = CONSECUTIVE + CharConstants.POINT + "earliest";
     public static final String PROCEDURE_FASTEST = CONSECUTIVE + CharConstants.POINT + "fastest";
     public static final String PROCEDURE_SHORTEST = CONSECUTIVE + CharConstants.POINT + "shortest";
@@ -70,6 +72,7 @@ public class CypherOutputGenerator {
     public static final String PROCEDURE_SENSOR_FLOWING = CONSECUTIVE + CharConstants.POINT + "sensorFlowing";
     public static final String PROCEDURE_SENSOR_FLOWING_BACKWARDS = CONSECUTIVE + CharConstants.POINT + "sensorFlowingBackwards";
     public static final String PROCEDURE_SNALPHA = ALPHA + CharConstants.POINT + "alphaPath";
+    
 
     private static final String COEXISTING = "coexisting";
     private static final String COTEMPORAL_PATHS = "coTemporalPaths";
@@ -595,6 +598,10 @@ public class CypherOutputGenerator {
                 procedureName = PROCEDURE_PAIR_CPATH_EXISTS;
                 functionReturn = new String[]{VALUE.toLowerCase()};
                 break;
+            case FUNCTION_ALPHA:
+                procedureName = PROCEDURE_ALPHA;
+                functionReturn = new String[]{PATH, INTERVALS, ALPHAS};
+                break; 
             case FUNCTION_SENSOR_FLOWING:
                 procedureName = PROCEDURE_SENSOR_FLOWING;
                 functionReturn = new String[]{PATH, INTERVALS};
@@ -1009,6 +1016,7 @@ public class CypherOutputGenerator {
                 || function.toLowerCase().equals(FUNCTION_SENSOR_FLOWING_BACKWARDS) 
                 || function.toLowerCase().equals(FUNCTION_SENSOR_FLOWING)
                 || function.toLowerCase().equals(FUNCTION_SNALPHA)
+                || function.toLowerCase().equals(FUNCTION_ALPHA)
                 || function.toLowerCase().equals(FUNCTION_SENSOR_CPATH);
     }
 

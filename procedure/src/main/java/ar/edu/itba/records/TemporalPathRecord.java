@@ -246,7 +246,7 @@ public class TemporalPathRecord {
 public static Map<NodePath, List<Interval>> getSolutionsMapFromSolutionsList(
     List<IntervalNodePairPath> paths, GraphDatabaseService db, Granularity granularity, Log log) {
     // log.info("getRecordsFromSolutionsListByPropertyId\n");
-    System.out.println("Got " + paths.size() + " solutions");
+
     Map<NodePath, List<Interval>> solutionsMap = new HashMap<>();
     paths.stream().forEach(path -> {
         LinkedList<Long> nodeIds = new LinkedList<>();
@@ -257,7 +257,7 @@ public static Map<NodePath, List<Interval>> getSolutionsMapFromSolutionsList(
         }
         solutionsMap.put(new IdOnlyNodePath(nodeIds, null), path.getIntervalSet().getIntervals());
     });
-    System.out.println("Map with " + solutionsMap.keySet().size() + " keys");
+    
     return solutionsMap;
     }
 

@@ -52,7 +52,7 @@ public class PathsAlgorithmAttributeNode extends AbstractAlgorithm<List<Interval
     }
 
     public PathsAlgorithmAttributeNode setInitialNode(Node initialNode) {
-        this.log.info(String.format("Initial node: %s.", initialNode));
+        //this.log.info(String.format("Initial node: %s.", initialNode));
         this.initialNode = initialNode;
         return this;
     }
@@ -62,7 +62,7 @@ public class PathsAlgorithmAttributeNode extends AbstractAlgorithm<List<Interval
     }
     
     public PathsAlgorithmAttributeNode setEndingNode(Node endingNode) {
-        this.log.info(String.format("Ending node: %s.", endingNode));
+        //this.log.info(String.format("Ending node: %s.", endingNode));
         this.strategy.setEndingNode(endingNode);
         return this;
     }

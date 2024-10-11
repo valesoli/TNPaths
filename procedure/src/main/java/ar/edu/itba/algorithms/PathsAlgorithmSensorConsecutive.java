@@ -1,11 +1,8 @@
 package ar.edu.itba.algorithms;
 
-import ar.edu.itba.algorithms.strategies.paths.IntervalSetPathSensorStrategy ;
 import ar.edu.itba.algorithms.strategies.paths.ConsecutiveSensorPathsStrategy;
 import ar.edu.itba.algorithms.utils.interval.Interval;
-import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPath;
 import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPathSensor;
-import ar.edu.itba.algorithms.utils.interval.IntervalNodeSensorPair;
 import ar.edu.itba.algorithms.utils.interval.IntervalParser;
 import ar.edu.itba.algorithms.utils.interval.IntervalSet;
 import ar.edu.itba.graph.Graph;
@@ -15,20 +12,12 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.Result;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.neo4j.logging.Log;
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.Optional;
 
 
 public class PathsAlgorithmSensorConsecutive extends AbstractAlgorithm<List<IntervalNodePairPathSensor>> {
@@ -52,7 +41,7 @@ public class PathsAlgorithmSensorConsecutive extends AbstractAlgorithm<List<Inte
     }
 
     public PathsAlgorithmSensorConsecutive setInitialNode(Node initialNode) {
-        this.log.info(String.format("Initial node: %s.", initialNode));
+        //this.log.info(String.format("Initial node: %s.", initialNode));
         this.initialNode = initialNode;
         return this;
     }
@@ -62,7 +51,7 @@ public class PathsAlgorithmSensorConsecutive extends AbstractAlgorithm<List<Inte
     }
     
     public PathsAlgorithmSensorConsecutive setEndingNode(Node endingNode) {
-        this.log.info(String.format("Ending node: %s.", endingNode));
+        //this.log.info(String.format("Ending node: %s.", endingNode));
         this.strategy.setEndingNode(endingNode);
         return this;
     }
@@ -90,7 +79,7 @@ public class PathsAlgorithmSensorConsecutive extends AbstractAlgorithm<List<Inte
         
         	IntervalNodePairPathSensor currentPair = this.strategy.getNext();
         	System.out.println("currentPair " + currentPair.toString1());
-            Node nodo = this.db.getNodeById(currentPair.getNode());
+           // Node nodo = this.db.getNodeById(currentPair.getNode());
                     
             List<Pair<List<Interval>, Long>> lista = this.graph.getRelationshipsFromNode(currentPair.getNode());
           	for(Pair<List<Interval>, Long> interval:lista) {

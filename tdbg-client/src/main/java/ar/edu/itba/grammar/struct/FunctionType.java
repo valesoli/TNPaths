@@ -1,7 +1,7 @@
 package ar.edu.itba.grammar.struct;
 
 public enum FunctionType {
-	SNALPHA,
+	ALPHA,
     CPATH,
     FPATH,
     LATEST,

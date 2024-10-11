@@ -2,7 +2,6 @@ package ar.edu.itba.records;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,12 +19,9 @@ import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPath;
 import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPathSensor;
 import ar.edu.itba.algorithms.utils.interval.IntervalSet;
 import ar.edu.itba.records.utils.IntervalIntersectionAttributesSerializer;
-import ar.edu.itba.records.utils.IntervalTree;
 import ar.edu.itba.records.utils.IntervalAlphaTree;
 import ar.edu.itba.records.utils.NodeSensorSerialization;
 import ar.edu.itba.records.utils.NodeSerialization;
-import ar.edu.itba.graph.Graph;
-import ar.edu.itba.graph.impl.FullStoredGraph;
 
 
 public class TemporalPathIntervalListRecordAlpha {
@@ -59,24 +55,20 @@ public class TemporalPathIntervalListRecordAlpha {
 		return paths.parallelStream().filter(Objects::nonNull).map(path -> {
             LinkedList<NodeSensorRecord> nodes = new LinkedList<>();
             IntervalNodePairPathSensor current = path;
-            System.out.print("Cada alpha path "+ path.toString()+ " Longitud ");
-            System.out.println(path.getLength());
             Long sensor_qty = path.getLength();
             Long i = sensor_qty;
             if (eList != null) {
 	            while (current != null) {
 	            	Boolean isSensor = false;
 	            	if (current.isSensor()) {
-	                    	System.out.print(i);
-	                    	System.out.print(eList);
-	                        System.out.print(eList.contains((int)(long)i));
-	            			isSensor = (!inList(eList,(int)(long)i));
+	            			
+	            			isSensor = (!(eList.contains((int)(long)i)));
 	            			--i;
-	            			System.out.println(isSensor);
+	            			current.setIsSensor(isSensor);
 	            		}
 	            	NodeSensorRecord nsr = new NodeSensorRecord(db.getNodeById(current.getNode()),
 	            			isSensor, current.getCategory(), current.getIntervalSet()); 
-	            	System.out.println("nsr con "+ current.toString1() );
+	           
 	                nodes.addFirst(nsr);
 	                current = current.getPrevious();
 	            }
@@ -85,7 +77,6 @@ public class TemporalPathIntervalListRecordAlpha {
             	while (current != null) {
 	            	NodeSensorRecord nsr = new NodeSensorRecord(db.getNodeById(current.getNode()),
 	            			current.isSensor(), current.getCategory(), current.getIntervalSet()); 
-	            	System.out.println("nsr "+ current.toString1() );
 	                nodes.addFirst(nsr);
 	                current = current.getPrevious();
 	            }
@@ -96,8 +87,7 @@ public class TemporalPathIntervalListRecordAlpha {
                     				node.getCategory(),db, attr,node.getInterval()):
                             NodeSensorSerialization.fromNotSensorNode(node.getNode(),db)))
                     .collect(Collectors.toList());
-                    
-            return getIntervalsFromAlphaPath(path,granularity,serializedNodes, dir_out);                    
+            return getIntervalsFromAlphaPath(path,granularity,serializedNodes, dir_out);
         });
     }
 	
@@ -107,7 +97,6 @@ public class TemporalPathIntervalListRecordAlpha {
         int numberOfSensors = path.getLength().intValue();
         int totalLength = path.getTotalLength().intValue();
         List<IntervalAlphaTree> intervalTrees = new LinkedList<>();
-        //System.out.println(path.getIntervalSet().toString());
         switch (numberOfSensors){
         case 0:
         	return new TemporalPathIntervalListRecordAlpha(serializedNodes, new LinkedList<>(), new LinkedList<>());
@@ -129,16 +118,12 @@ public class TemporalPathIntervalListRecordAlpha {
         	IntervalNodePairPathSensor previousPath;
         	IntervalNodePairPathSensor previousSensor = null;
             IntervalSet previousSetSensor = null;
-            
         	int sensorCount = 0;
         	if (path.isSensor()){
         		sensorCount = 1;
         		previousSensor = path;
         		previousSetSensor = path.getIntervalSet();
-        		
-        		//Intersect previous??
-        		//if (!path.getIntersectPrevious())
-        			path.getIntervalSet().getIntervals().forEach(
+        		path.getIntervalSet().getIntervals().forEach(
 						i -> intervalTrees.add(new IntervalAlphaTree(i))       
 				);                	
         	}
@@ -183,8 +168,10 @@ public class TemporalPathIntervalListRecordAlpha {
         	}
         	
         }
-        Set<List<String>> result = new HashSet<>();
-        Set<List<String>> result2 = new HashSet<>();
+        //Set<List<String>> result = new HashSet<>();
+        //Set<List<String>> result2 = new HashSet<>();
+        List<List<String>> result = new ArrayList<>();
+        List<List<String>> result2 = new ArrayList<>();
         for (IntervalAlphaTree intervalTree:intervalTrees) {
         	 AlphaResult intervals_and_alphas = intervalTree.getPaths(granularity, dir_out);
         	 result.addAll(intervals_and_alphas.getSt_intervals());
@@ -193,8 +180,6 @@ public class TemporalPathIntervalListRecordAlpha {
         }
        
         TemporalPathIntervalListRecordAlpha res = new TemporalPathIntervalListRecordAlpha(serializedNodes, new LinkedList<>(result), new LinkedList<>(result2));
-        System.out.println(res.getIntervals().toString());
-        System.out.println(res.getAlphas().toString());
         return res;
     }
     
@@ -229,9 +214,6 @@ public class TemporalPathIntervalListRecordAlpha {
 
         IntervalNodePairPath previousPath;
         IntervalSet currentSet = path.getIntervalSet();
-    	System.out.print("currentSet ");
-    	System.out.println(currentSet.toString());
-    
         previousPath = path.getPrevious();
         if (currentSet == null || previousPath == null) {
             return new TemporalPathIntervalListRecordAlpha(null,null,null);
@@ -246,21 +228,17 @@ public class TemporalPathIntervalListRecordAlpha {
             
             previousPath = path.getPrevious();
             if (currentSet != null ) {
-            	/*&& previousPath.getIntervalSet() != null) {*/
-            
-            	System.out.print("currentSet ");
-            	System.out.println(currentSet.toString());
-               
-                for (IntervalAlphaTree intervalTree:intervalTrees) {
+            	for (IntervalAlphaTree intervalTree:intervalTrees) {
                 		intervalTree.getNextNodes(currentSet);
                 }
             }
             path = previousPath;
         }
 
-        Set<List<String>> result = new HashSet<>();
-        Set<List<String>> result2 = new HashSet<>();
-        
+        //Set<List<String>> result = new HashSet<>();
+        //Set<List<String>> result2 = new HashSet<>();
+        List<List<String>> result = new ArrayList<>();
+        List<List<String>> result2 = new ArrayList<>();
         for (IntervalAlphaTree intervalTree:intervalTrees) {
        	 
 	       	 AlphaResult intervals_and_alphas = intervalTree.getSNAlphaPaths(granularity);
@@ -270,8 +248,6 @@ public class TemporalPathIntervalListRecordAlpha {
        }
        
        TemporalPathIntervalListRecordAlpha res = new TemporalPathIntervalListRecordAlpha(serializedNodes, new LinkedList<>(result), new LinkedList<>(result2));
-       System.out.println(res.getIntervals().toString());
-       System.out.println(res.getAlphas().toString());
        return res;
     }
     
@@ -313,23 +289,14 @@ public class TemporalPathIntervalListRecordAlpha {
         }
 
         TemporalPathIntervalListRecordAlpha res = new TemporalPathIntervalListRecordAlpha(serializedNodes, new LinkedList<>(result), new LinkedList<>(result2));
-        System.out.println(res.getIntervals().toString());
-        System.out.println(res.getAlphas().toString());
         return res;
-        
-        /*intervalTrees.forEach(intervalTree -> result.addAll(intervalTree.getPaths(granularity)));
-        return new LinkedList<>(result);*/
+     
     }
 
-    private static Boolean inList(List<Integer> list, Integer val) {
-    	for (Integer i:list)
-    		if (i==val)
-    			return true;
-    	return false;
-    }
+
     
     public static void main(String[] args) {
     	List<Integer> a = new ArrayList<>(Arrays.asList(2,3,4,5));
-    	System.out.println(inList(a,(int)(long)2L));
+    	//System.out.println(inList(a,(int)(long)2L));
     }   	
 }

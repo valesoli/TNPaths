@@ -54,14 +54,12 @@ public class CompleteIntersectionAttributePathsStrategy  extends IntervalSetPath
             return;
         }
        
-        System.out.println("Estoy expandiendo el nodo: "+node.toString());
             
         IntervalSet interval = this.getIntervalSet(
                 node.getIntervalSet(), new IntervalSet(intervalSet)
         );
         
         if (interval.isEmpty()) { return; }
-        System.out.println("El intervalo intersecado del común: "+interval.toString());
         IntervalNodePairPath path = new IntervalNodePairPath(otherNodeId, interval, (node.getLength() ));
         path.setPrevious(node);
         Set<Long> previousNodes = node.copyPreviousNodes();
@@ -83,9 +81,7 @@ public class CompleteIntersectionAttributePathsStrategy  extends IntervalSetPath
         );
         
         if (interval.isEmpty()) { return; }
-        System.out.println("Intervalo : "+node.getIntervalSet().toString());
-        System.out.println("Otro: " + para_print.toString());
-        System.out.println("El intervalo intersecado del sensor: "+interval.toString());
+
         IntervalNodePairPath path = new IntervalNodePairPath(otherNodeId, interval, (node.getLength() + 1 ));
         path.setPrevious(node);  
         Set<Long> previousNodes = node.copyPreviousNodes();

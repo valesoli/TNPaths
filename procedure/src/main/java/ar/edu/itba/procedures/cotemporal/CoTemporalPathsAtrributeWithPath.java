@@ -68,7 +68,13 @@ public class CoTemporalPathsAtrributeWithPath {
         String att = (String) configuration.get(ConfigurationFieldNames.ATTRIBUTE);
         String op = (String) configuration.get("operator");
         String val = (String) configuration.get("category");
-        String delta = (String) configuration.get("delta");
+        
+        String delta;
+        //default delta
+        if (configuration.get("delta")==null)
+        	delta = "PT8H";
+        else 
+        	delta = (String) configuration.get("delta");
         
         String searchIntervalStr = (String) configuration.get(ConfigurationFieldNames.BETWEEN);
         Interval searchInterval = IntervalParser.fromString(searchIntervalStr);
@@ -89,40 +95,11 @@ public class CoTemporalPathsAtrributeWithPath {
         timer.stop();
         log.info(String.format("CoTemporalAttributePaths algorithm finished in %s.", timer.elapsed()));
         log.info(String.format("Nodes expanded %d.", algorithm.getStrategy().getNodesExpanded()));
-        System.out.println("Resultado: "+result.toString());
+        
         if (result==null)
         	return null;
         else
         	return TemporalPathRecord.getRecordsFromSolutionSensorList(result, db, graph.getGranularity());
     }
 
-    @Procedure(value="coexisting.coTemporalAttributePaths.exists")
-    @Description("Returns true if a coexisting path exists between two nodes")
-    public Stream<BooleanRecord> coTemporalAttributePathExists(
-            @Name("node query") Node node,
-            @Name("ending node") Node endingNode,
-            @Name("minimum length") Long min,
-            @Name("maximum length") Long max,
-            @Name(value = "configuration", defaultValue = "{}") Map<String, Object> configuration) {
-        if (min <= 0 || max < min) {
-            throw new IllegalArgumentException(
-                    "The minimum value cannot be 0 nor the maximum value can be lesser than the minimum.");
-        }
-        log.info("Initializing coexisting graph algorithm.");
-        Stopwatch timer = Stopwatch.createStarted();
-
-        Graph graph = new GraphBuilder(db).buildStored(new ProcedureConfiguration(configuration), false);
-        PathsAlgorithm algorithm = new PathsAlgorithm(graph)
-                .setStrategy(new BooleanCompleteIntersectionPathsStrategy(min, max, log))
-                .setLog(log)
-                .setInitialNode(node)
-                .setEndingNode(endingNode);
-        List<IntervalNodePairPath> result = algorithm.run();
-
-        timer.stop();
-        log.info(String.format("CoTemporalPaths.exists Algorithm finished in %s.", timer.elapsed()));
-        log.info(String.format("Nodes expanded %d.", algorithm.getStrategy().getNodesExpanded()));
-
-        return Stream.of(new BooleanRecord(!result.isEmpty()));
-    }
 }

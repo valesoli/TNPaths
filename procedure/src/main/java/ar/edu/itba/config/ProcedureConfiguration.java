@@ -111,23 +111,38 @@ public class ProcedureConfiguration {
     public List<Integer> getExcludeList(){
     	
     	/*List<Integer> a = new ArrayList(Arrays.asList( config.getOrDefault(ConfigurationFieldNames.EXCLUDE,null)));*/
-    	List<Integer> a = new ArrayList<>((List<Integer>) config.getOrDefault(ConfigurationFieldNames.EXCLUDE,
-    			new ArrayList<>(Arrays.asList())));
-    	if (a.size()==0)
-    		return null;
-        return a; 
+    	String stringList = (String) config.getOrDefault(ConfigurationFieldNames.EXCLUDE, null);
+    	if (stringList == null) return null;
+    	
+    	List<String> myList = new ArrayList<String>(Arrays.asList(stringList.substring(1,stringList.length()-1).split(",")));
+    	List<Integer> b = new ArrayList<>();
+    	for (String s:myList) {
+    		b.add(Integer.parseInt(s.trim()));
+    	}
+    	return b; 
     	
     }
     
     public static void main(String[] args) {
-    	List<Integer> a = new ArrayList<>(Arrays.asList(2));
-    	Map<String, Object> temp = new HashMap<>();
+    	
+    	List<Integer> a = new ArrayList<>(Arrays.asList(2,3,5));
+    	String stringList = a.toString();
+       	System.out.println(stringList);
+       	System.out.println(stringList.substring(1,stringList.length()-1));
+       	List<Integer> b = new ArrayList<>();
+       	
+    	List<String> myList = new ArrayList<String>(Arrays.asList(stringList.substring(1,stringList.length()-1).split(",")));
+    	for (String s:myList) {
+    		b.add(Integer.parseInt(s.trim()));
+    	}
+    	System.out.println(b);
+    	/*Map<String, Object> temp = new HashMap<>();
     	temp.put("exclude", a);
     	temp.put("between", "a");
     	System.out.println(temp);
     	Long i = 3L;
     	--i;
     	System.out.println(a.contains((int)(long)i));
-    	
+    	*/
     }
 }

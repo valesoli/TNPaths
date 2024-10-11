@@ -1,11 +1,8 @@
 package ar.edu.itba.algorithms;
 
-import ar.edu.itba.algorithms.strategies.paths.IntervalSetPathSensorStrategy ;
 import ar.edu.itba.algorithms.strategies.paths.FlowingSensorPathsStrategy;
 import ar.edu.itba.algorithms.utils.interval.Interval;
-import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPath;
 import ar.edu.itba.algorithms.utils.interval.IntervalNodePairPathSensor;
-import ar.edu.itba.algorithms.utils.interval.IntervalNodeSensorPair;
 import ar.edu.itba.algorithms.utils.interval.IntervalParser;
 import ar.edu.itba.algorithms.utils.interval.IntervalSet;
 import ar.edu.itba.graph.Graph;
@@ -15,20 +12,14 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.Result;
+
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.neo4j.logging.Log;
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.Optional;
+
 
 
 public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<IntervalNodePairPathSensor>> {
@@ -61,7 +52,7 @@ public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<Interval
     }
 
     public PathsAlgorithmSensorFlowing setInitialNode(Node initialNode) {
-        this.log.info(String.format("Initial node: %s.", initialNode));
+        //this.log.info(String.format("Initial node: %s.", initialNode));
         this.initialNode = initialNode;
         return this;
     }
@@ -71,7 +62,7 @@ public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<Interval
     }
     
     public PathsAlgorithmSensorFlowing setEndingNode(Node endingNode) {
-        this.log.info(String.format("Ending node: %s.", endingNode));
+        //this.log.info(String.format("Ending node: %s.", endingNode));
         this.strategy.setEndingNode(endingNode);
         return this;
     }
@@ -88,7 +79,7 @@ public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<Interval
     public List<IntervalNodePairPathSensor> run() {
     	
     	Node inode = getInitialNode();
-    	System.out.println(inode.getId());
+    	
     	Long naId =this.strategy.measuresVariable(inode);
     	if ((!this.strategy.isSensor(inode)) || (naId == null)){
     		System.out.println("Must start from a Sensor Node");
@@ -96,9 +87,6 @@ public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<Interval
     	}
     	
     	javafx.util.Pair<IntervalSet,Long> otherPair;
-    	/*javafx.util.Pair<IntervalSet, Long> tempis = this.strategy.getValueFirstInterval(naId, 
-    			this.strategy.getValue(), 
-    			this.graph.getBetweenInterval());*/
     	javafx.util.Pair<IntervalSet, Long> tempis;
     	if (isBackwards()){
     		tempis = this.strategy.getValueFirstIntervalB(naId, 
@@ -106,15 +94,13 @@ public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<Interval
     			this.graph.getBetweenInterval());
     	}
     	else{
-    		System.out.println("va a tempis");
-    		 tempis = this.strategy.getValueIntervals(naId, 
+    		tempis = this.strategy.getValueIntervals(naId, 
         			this.strategy.getValue(), 
         			this.graph.getBetweenInterval(), 
         			this.graph.getBetweenInterval());
         	}
     	if (tempis.getKey() == null) return null;
-    	//IntervalSet is = tempis.getKey().inIntersection(this.graph.getBetweenInterval());
-    	System.out.println("sigue1");
+    	
     	this.strategy.addToFrontier(
                 new IntervalNodePairPathSensor(inode.getId(), tempis.getKey(), true, tempis.getValue(), 1L, 1L)
         );
@@ -122,31 +108,26 @@ public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<Interval
     	//Initialize with the search interval so far
         while (!this.strategy.isFinished()) {
         	IntervalNodePairPathSensor currentPair = this.strategy.getNext();
-        	//System.out.println("currentPair " + currentPair.toString1());
+
             Node nodo = this.db.getNodeById(currentPair.getNode());                    
             List<Pair<List<Interval>, Long>> lista = this.graph.getRelationshipsFromNode(currentPair.getNode());
           	for(Pair<List<Interval>, Long> interval:lista) {
 	          	Node otherNode = this.db.getNodeById(interval.getRight());
 	          	naId = this.strategy.measuresVariable(otherNode);
-	          	System.out.println(naId);
+	          	
 	          	if (this.strategy.isSensor(otherNode) && (naId != null)) {
 	          		boolean comp1 = false;
 	          		//Only the useful intervals remain
 	          		IntervalSet is1 = currentPair.getIntervalSet().inIntersection(this.graph.getBetweenInterval());
-	          		System.out.println("currentPair " + currentPair.toString1());
 	          		for (Interval i1:is1.getIntervals()){
 	          			
 	          			//Only the useful intervals remain
 	          			if (isBackwards()){
-	          				System.out.println("Es backwards ");
 	          				otherPair = this.strategy.getValueIntervalsB(naId, currentPair.getCategory(), i1, this.graph.getBetweenInterval() );
-	          				System.out.println("Obtenido de getValueIntervalsB"+otherPair.toString());
-		          			if (otherPair.getKey() != null){
+	          				if (otherPair.getKey() != null){
 			          			IntervalSet is2 = otherPair.getKey().inIntersection(this.graph.getBetweenInterval());
-			          			System.out.println("is2 "+is2.toString());
 			          			for (Interval i2:is2.getIntervals()){
 			          				comp1 = i1.compareNextDeltaBack(i2, this.strategy.getDelta());
-			          				System.out.println(comp1);
 			          				if (comp1) {
 			          					this.strategy.expandFrontierSensor(i2, currentPair, interval.getRight(),otherPair.getValue());
 			          				}         				
@@ -185,7 +166,6 @@ public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<Interval
     		
     		String sss = (String) node.getProperty("title");
     		if (sss.equals("Sensor")) {
-    			System.out.println("El title es un Sensor " + sss);
     			IntervalSet s1 = searchIntervalSet.intersection(new IntervalSet(IntervalParser.entityToIntervals(node)));
     		
     			if (!s1.isEmpty()){
@@ -200,7 +180,6 @@ public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<Interval
 
     
     public IntervalSet IntervalSensor(Long attID, IntervalSet searchInterval){
-	   //IntervalSet searchIntervalSet = new IntervalSet(searchInterval);
 	   	return searchInterval.intersection(getValueIntervals(attID)); 
 	   	
 	   	}
@@ -212,8 +191,6 @@ public class PathsAlgorithmSensorFlowing extends AbstractAlgorithm<List<Interval
         for (Relationship n1:n){
         	
         	Node na = this.db.getNodeById(n1.getEndNodeId());
-        	System.out.println("na: " + na.toString());
-        	System.out.println("en el mismo");
         	if (na.getProperty("title").equals(this.strategy.getAttribute())){
         		List<Interval> inter = IntervalParser.fromStringArrayToIntervals((String []) na.getProperty("interval"));
         		IntervalSet itemp = new IntervalSet(inter);

@@ -1,7 +1,8 @@
 package ar.edu.itba.records;
 
+import java.util.ArrayList;
 import java.util.List;
-import ar.edu.itba.algorithms.utils.interval.allenRel;
+import java.util.Set;
 
 public class AlphaResult {
 	private List<List<String>> st_intervals;
@@ -9,6 +10,13 @@ public class AlphaResult {
 	
 	public AlphaResult(List<List<String>> st_intervals, List<List<String>> st_alphas) {
 		this.st_intervals=st_intervals;
+		this.st_alphas=st_alphas;
+	}
+	
+	public AlphaResult(Set<List<String>> st_intervals, List<List<String>> st_alphas) {
+		List<List<String>> list_set = new ArrayList<>();
+		list_set.addAll(st_intervals);
+		this.st_intervals=list_set;
 		this.st_alphas=st_alphas;
 	}
 	

@@ -23,7 +23,7 @@ public class NodeSensorSerialization {
 
     public static Map<String, Object> fromNode(Node node, AttributesSerializer attributesSerializer,
                                                GraphDatabaseService db) {
-    	System.out.println("Con Sensor por cualquier lado: " + String.valueOf(node.getId()));
+
         Map<String, Object> serialization = new LinkedHashMap<>(node.getAllProperties());
         Result result = getNodeAttributes(node.getId(), db);
         serialization.put("attributes", serializeAttributes(result, attributesSerializer));

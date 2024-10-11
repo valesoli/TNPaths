@@ -48,6 +48,10 @@ public class IntervalNodeSensorPair {
     	return this.isSensor;
     }
     
+    public boolean setIsSensor(Boolean iss) {
+    	return this.isSensor = iss;
+    }
+    
     public Long getCategory() {
         return category;
     }

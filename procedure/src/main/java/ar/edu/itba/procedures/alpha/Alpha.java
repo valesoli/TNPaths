@@ -48,7 +48,7 @@ public class Alpha {
     public Log log;
     
     @Procedure(value="alpha.alphaPath")
-    @Description("Get all the alpha paths of n or less sensors from a node where those nodes measures the variable")
+    @Description("Get all the Sensor Network alpha paths of sensors from a node, where those nodes measures the variable")
     public Stream<TemporalPathIntervalListRecordAlpha> alphaPath(
             @Name("node query") Node node,
             @Name("ending node") Node endingNode,
@@ -56,20 +56,35 @@ public class Alpha {
             @Name("maximum length") Long max,
             @Name(value = "configuration", defaultValue = "{}") Map<String, Object> configuration) 
             {
-    	if (min <= 0 || max < min) {
+    	if (min <= 0 || max < min || max < 2) {
             throw new IllegalArgumentException(
-                    "The minimum value cannot be 0 nor the maximum value can be lesser than the minimum.");
+                    "The minimum value cannot be 0 nor the maximum value can be lesser than the minimum or 2.");
         }
-        log.info("Initializing alpha.alphaPath algorithm.");
-        Stopwatch timer = Stopwatch.createStarted();
+        
+        
         String att = (String) configuration.get("attribute");
         String op = (String) configuration.get("operator");
-        String val = (String) configuration.get("category");
-        String delta = (String) configuration.get("delta");
+        
+    	if (!op.equals("=")) {
+            throw new IllegalArgumentException(
+                    "Only = operator for Alpha pahs allowed.");
+        }
+    	
+    	String val = (String) configuration.get("category");
+    	
+    	Stopwatch timer = Stopwatch.createStarted();
+    	log.info("Initializing alpha.alphaPath algorithm.");
+        
+    	String delta;
+        //default delta
+        if (configuration.get("delta")==null)
+        	delta = "PT8H";
+        else 
+        	delta = (String) configuration.get("delta");
         ProcedureConfiguration pconf = new ProcedureConfiguration(configuration);
         List<Integer> eList = pconf.getExcludeList();
 
-        Graph graph = new GraphBuilder(db).buildStored(pconf, false);
+        Graph graph = new GraphBuilder(db).buildStored(pconf, true);
         PathsAlgorithmAlphas algorithm = new PathsAlgorithmAlphas(graph,db)
                 .setStrategy(new AlphaPathsStrategy(db, min, max, att, op, Long.valueOf(val), 
                 		Duration.parse(delta), log))
@@ -77,22 +92,22 @@ public class Alpha {
                 .setInitialNode(node)
                 .setEndingNode(endingNode);
         List<IntervalNodePairPathSensor> result = algorithm.run();
-
         timer.stop();
-        System.out.println("Sale y va a solutions. Size = " + String.valueOf(result.size()));
-        System.out.println("Resultado: "+result.toString());
-
-        
         log.info(String.format("alphaPath algorithm finished in %sms", (timer.elapsed().toNanos() / (double) 1000000)));
         log.info(String.format("Nodes expanded %d.", algorithm.getStrategy().getNodesExpanded()));
-        Boolean direction = (configuration.get("direction")=="outgoing");
+      
         Stream<TemporalPathIntervalListRecordAlpha> res= TemporalPathIntervalListRecordAlpha.getRecordsFromSolutionAlphaList
-        		(result, db, graph.getGranularity(), att,direction,eList);
+        		(
+        				result, 
+        				db, 
+        				graph.getGranularity(), 
+        				att, 
+        				(configuration.get("direction").equals("outgoing")),
+        				eList);
 
         return res;
     }
     
     
-
    
 }

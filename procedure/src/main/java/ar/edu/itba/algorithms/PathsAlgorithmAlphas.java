@@ -14,11 +14,7 @@ import org.neo4j.graphdb.Node;
 
 import org.neo4j.logging.Log;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 
@@ -45,7 +41,7 @@ public class PathsAlgorithmAlphas extends AbstractAlgorithm<List<IntervalNodePai
     }
 
     public PathsAlgorithmAlphas setInitialNode(Node initialNode) {
-        this.log.info(String.format("Initial node: %s.", initialNode));
+        //this.log.info(String.format("Initial node: %s.", initialNode));
         this.initialNode = initialNode;
         return this;
     }
@@ -55,7 +51,7 @@ public class PathsAlgorithmAlphas extends AbstractAlgorithm<List<IntervalNodePai
     }
     
     public PathsAlgorithmAlphas setEndingNode(Node endingNode) {
-        this.log.info(String.format("Ending node: %s.", endingNode));
+        //this.log.info(String.format("Ending node: %s.", endingNode));
         this.strategy.setEndingNode(endingNode);
         return this;
     }
@@ -69,58 +65,32 @@ public class PathsAlgorithmAlphas extends AbstractAlgorithm<List<IntervalNodePai
     public List<IntervalNodePairPathSensor> run() {
     	
     	Node inode = getInitialNode();
-    	System.out.println(inode.getId());
     	Long naId =this.strategy.measuresVariable(inode);
     	if ((!this.strategy.isSensor(inode)) || (naId == null)){
     		System.out.println("Must start from a Sensor Node");
     		return null;
     	}
-    	IntervalNodePair otherPair;
-    	
-    	IntervalNodePair tempis = this.strategy.getValueIntervals(naId, 
-        			this.strategy.getValue(), 
-        			this.graph.getBetweenInterval(), 
-        			this.graph.getBetweenInterval());
-        	
-    	if (tempis.getIntervalSet() == null) return null;
+    	IntervalSet tempis	= this.strategy.getValueIntervals(naId, this.strategy.getValue(), this.graph.getBetweenInterval());
+    	if (tempis == null) return null;
     	this.strategy.addToFrontier(
-                new IntervalNodePairPathSensor(inode.getId(), tempis.getIntervalSet(), true, tempis.getNode(), 1L, 1L)
+        		new IntervalNodePairPathSensor(inode.getId(), tempis, true, this.strategy.getValue(), 1L, 1L)
         );
     	
-    	//Initialize with the search interval so far
+    	
         while (!this.strategy.isFinished()) {
         	IntervalNodePairPathSensor currentPair = this.strategy.getNext();
             List<Pair<List<Interval>, Long>> lista = this.graph.getRelationshipsFromNode(currentPair.getNode());
-            
           	for(Pair<List<Interval>, Long> interval:lista) {
               	Node otherNode = this.db.getNodeById(interval.getRight());
 	          	naId = this.strategy.measuresVariable(otherNode);
 	          	if (this.strategy.isSensor(otherNode) && (naId != null)) {
-	          	  		boolean comp1 = false;
-		          		//Only the useful intervals remain
-		          		IntervalSet is1 = currentPair.getIntervalSet().inIntersection(this.graph.getBetweenInterval());
-		          		System.out.println("currentPair " + currentPair.toString1());
-		          		for (Interval i1:is1.getIntervals()){
-		          			
-		          			//Only the useful intervals remain
-		          			otherPair = this.strategy.getValueIntervals(naId, currentPair.getCategory(), i1, this.graph.getBetweenInterval());
-			          			
-			          		if (otherPair.getIntervalSet() != null){
-				          			IntervalSet is2 = otherPair.getIntervalSet().inIntersection(this.graph.getBetweenInterval());
-				          			for (Interval i2:is2.getIntervals()){
-				          				comp1 = i1.compareDelta(i2, this.strategy.getDelta());
-				          				if (comp1) {
-				          					this.strategy.expandFrontierSensor(i2, currentPair, interval.getRight(),otherPair.getNode());
-				          				}         				
-				          			}
-			          			}
-		          		
+	              		IntervalSet otherIntervalSet = this.strategy.getValueIntervals(naId, currentPair.getCategory(), this.graph.getBetweenInterval());
+		          		if (otherIntervalSet != null) {
+		          			this.strategy.expandFrontierSensor(otherIntervalSet, currentPair, interval.getRight(),currentPair.getCategory());
 		          		}
-	          	   	}
+		      	   	}
 	          	else 
 	          			this.strategy.expandFrontier(interval.getLeft(), currentPair, interval.getRight());
-	          		
-	                    
             }            
             currentPair.setPreviousNodes(null);
         }

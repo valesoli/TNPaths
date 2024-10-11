@@ -13,12 +13,15 @@ public class IntervalParser {
     public static final String WS_SEPARATOR = " — ";
 
     public static void main (String [] args) {
-        String intervalStr = "2021-03-31 — Now";
-        String intervalStr2 = "2022-10-27 — 2022-10-31";
-
-        Interval interval = fromString(intervalStr2);
-        System.out.println(interval);
+        //String intervalStr = "2022-03-31 — Now";
+        //String intervalStr2 = "2022-10-27 — 2022-10-31";
+        String intervalStr = "2016—2022";
+        String intervalStr2 = "2015—2016";
+        Interval interval = fromString(intervalStr);
+        Interval interval2 = fromString(intervalStr2);
+        
         System.out.println(interval.getStart());
+        System.out.println(interval2.getEnd());
     }
 
     public static Interval fromString(String interval) {
@@ -32,7 +35,7 @@ public class IntervalParser {
             lateLimit = InstantParser.nowValue(earlyLimit.getRight());
             isNow = true;
         } else {
-            lateLimit = InstantParser.parse(limits[1], true);
+            lateLimit = InstantParser.parse(limits[1], false);//closed-open intervals. closed-closed: true
         }
         return new Interval(earlyLimit.getLeft(), lateLimit.getLeft(), earlyLimit.getRight().getSmallerGranularity(lateLimit.getRight()), isNow);
     }
@@ -45,7 +48,7 @@ public class IntervalParser {
             lateLimit = InstantParser.nowValue(earlyLimit.getRight());
             isNow = true;
         } else {
-            lateLimit = InstantParser.parse(lateLimitString, true);
+            lateLimit = InstantParser.parse(lateLimitString, false);//closed-open intervals: false. closed-closed: true
         }
         return new Interval(
                 earlyLimit.getLeft(), lateLimit.getLeft(),

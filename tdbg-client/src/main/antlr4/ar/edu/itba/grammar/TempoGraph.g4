@@ -8,7 +8,7 @@ grammar TempoGraph;
  * Parser Rules
  */
 
-query               :   query_body (WS temporal_operators)? (WS skip_clause)? (WS limit_clause)? WS? EOF | create_index_query | connect_index_query | create_or_update_query | delete_query | delete_index_query | toggle_index_use_query;
+query               :   query_body (WS temporal_operators)? (WS exclude_clause)? (WS skip_clause)? (WS limit_clause)? WS? EOF | create_index_query | connect_index_query | create_or_update_query | delete_query | delete_index_query | toggle_index_use_query;
 
 query_body          :   WS? select_clause WS match_clause (WS where_clause)? ;
 
@@ -32,8 +32,8 @@ where_clause        :   WHERE WS where_conditions;
 
 where_conditions    :   where_conditions where_connector where_conditions
                     |   (LPAREN WS? where_conditions WS? RPAREN)
-                    |   condition
-                    |   sncondition_clause;
+                    |   condition ;
+                    
 
 when_clause         :   WHEN WS match_clause (WS where_clause)? ;
 
@@ -41,19 +41,19 @@ snapshot_clause     :   SNAPSHOT WS time_value_with_now ;
 
 between_clause      :   BETWEEN WS time_value WS AND WS time_value_with_now ;
 
-sncondition_clause  :   ALL WS sncondition;
-
 limit_clause        :   LIMIT WS U_INTEGER ;
 
 skip_clause         :   SKIP_S WS U_INTEGER ;
 
-f_call              :   WORD WS? EQ WS? (cpath | latest | fastest | earliest | shortest| rspath | snalphapath) ;
+exclude_clause      :   EXCLUDE_S WS U_INTEGER (WS? COMMA WS? U_INTEGER)? ;
 
-cpath               :   (CPATH | PAIRCPATH | CPATH2) WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? WS? RPAREN ;
+f_call              :   WORD WS? EQ WS? (cpath | latest | fastest | earliest | shortest | rspath | alphapath) ;
 
-rspath              :   (FPATH | FBPATH | RSCPATH) WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? (WS? COMMA WS? attribute)? (WS? COMMA WS? operator)? (WS? COMMA WS? category)? (WS? COMMA WS? delta)? WS? RPAREN ;
+cpath               :   (CPATH | PAIRCPATH | CPATH2 ) WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? WS? RPAREN ;
 
-snalphapath        	:   SNALPHAPATH WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? (WS? COMMA WS? attribute)? (WS? COMMA WS? operator)? (WS? COMMA WS? category)? (WS? COMMA WS? delta)? WS? RPAREN ;
+rspath              :   (FPATH | FBPATH | SNCPATH) WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? (WS? COMMA WS? delta)? WS? RPAREN ;
+
+alphapath        	:   (SNALPHAPATH | ALPHAPATH) WS? LPAREN WS? endpoints_args (WS? COMMA WS? interval_arg)? (WS? COMMA WS? delta)? WS? RPAREN ;
 
 latest              :   (LATESTDEPARTURE | LATESTARRIVAL) WS? LPAREN WS? endpoints_args (WS? COMMA WS? time_value)? WS? RPAREN ;
 
@@ -87,11 +87,11 @@ variable_length     :   TIMES (U_INTEGER | (U_INTEGER? DOUBLE_DOT U_INTEGER))? ;
 
 attr                :   WORD DOT WORD ;
 
+att_key             :   ATTRIBUTE ;
+
 select_exp          :   (attr alias?) | WORD | (select_fstruct alias?) | (id_call alias?) | (property_access alias?) | (aggr alias?) | (utils alias?);
 
 select_fstruct      :   ((WORD DOT WORD LBRACKET U_INTEGER RBRACKET) | (index_accessor LPAREN WORD DOT WORD RPAREN)) (DOT WORD (LBRACKET U_INTEGER RBRACKET)?)* ;
-
-all_fstruct         :   (WORD DOT WORD DOT WORD DOT WORD) ;
 
 index_accessor      :   HEAD | LAST ;
 
@@ -109,9 +109,11 @@ alias               :   WS AS WS WORD ;
 
 where_connector     :   WS (AND | OR) WS ;
 
-condition           :   (value WS? relop WS? value) | where_fcall_bool ;
+condition           :   (value WS? relop WS? value) | where_fcall_bool | sncondition;
 
-sncondition         :   (all_fstruct WS? relop WS? value) ;
+sncondition         :   (ALL WS? all_fstruct WS? relop WS? value) ;
+
+all_fstruct         :   (value DOT att_key DOT WORD) ;
 
 where_fcall_bool    :   cpath ;
 
@@ -187,6 +189,7 @@ fragment X          :   'X' | 'x' ;
 fragment Y          :   'Y' | 'y' ;
 fragment Z          :   'Z' | 'z' ;
 
+ATTRIBUTE           :   A T T R I B U T E ;
 FOR                 :   F O R ;
 ALL                 :   A L L ;
 SIZE                :   S I Z E ;
@@ -196,17 +199,19 @@ HEAD                :   H E A D ;
 LAST                :   L A S T ;
 LIMIT               :   L I M I T ;
 SKIP_S              :   S K I P ;
+EXCLUDE_S           :   E X C L U D E ;
 CPATH               :   C P A T H ;
 CPATH2              :   C P A T H [2] ;
 FBPATH             	:   F B P A T H ;
 FPATH              	:   F P A T H ;
-RSCPATH				:	R S C P A T H ;
+SNCPATH				:	S N C P A T H ;
 PAIRCPATH           :   P A I R C P A T H ;
 EARLIEST            :   E A R L I E S T P A T H ;
 FASTEST             :   F A S T E S T P A T H ;
 SHORTEST            :   S H O R T E S T P A T H ;
 LATESTDEPARTURE     :   L A T E S T D E P A R T U R E P A T H ;
 LATESTARRIVAL       :   L A T E S T A R R I V A L P A T H ;
+ALPHAPATH           :   A L P H A P A T H ;
 SNALPHAPATH			:	S N A L P H A P A T H ;
 SELECT              :   S E L E C T ;
 AS                  :   A S ;

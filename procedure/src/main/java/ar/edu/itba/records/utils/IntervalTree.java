@@ -34,7 +34,6 @@ public class IntervalTree {
         sameDepthLeaves.forEach(unused_ -> paths.add(new LinkedList<>()));
         List<IntervalTreeNode> nodes = sameDepthLeaves;
         for (IntervalTreeNode sdl:sameDepthLeaves)
-        	System.out.println(sdl.getInterval() );
         while (!nodes.isEmpty()) {
             List<IntervalTreeNode> nextNodes = new LinkedList<>();
             AtomicInteger i = new AtomicInteger();

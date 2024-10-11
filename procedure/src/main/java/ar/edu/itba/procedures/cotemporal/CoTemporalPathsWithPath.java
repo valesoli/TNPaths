@@ -65,7 +65,7 @@ public class CoTemporalPathsWithPath {
             throw new IllegalArgumentException(
                     "The minimum value cannot be 0 nor the maximum value can be lesser than the minimum.");
         }
-        // log.info("Initializing coexisting graph algorithm.");
+        log.info("Initializing coexisting graph algorithm.");
         Stopwatch timer = Stopwatch.createStarted();
 
         Graph graph = new GraphBuilder(db).buildStored(new ProcedureConfiguration(configuration), false); // Projection es Full
@@ -76,10 +76,9 @@ public class CoTemporalPathsWithPath {
                 .setEndingNode(endingNode);
         List<IntervalNodePairPath> result = algorithm.run();
         // Par (node id2, intervalo del nodo anterior intersección intervalo de la relación (n1)-[r:rname]-(n2))
-        System.out.println("Resultado común: "+result.toString());
         timer.stop();
         log.info(String.format("CoTemporalPaths algorithm finished in %sms", (timer.elapsed().toNanos() / (double) 1000000)));
-        // log.info(String.format("Nodes expanded %d.", algorithm.getStrategy().getNodesExpanded()));
+        log.info(String.format("Nodes expanded %d.", algorithm.getStrategy().getNodesExpanded()));
 
         return TemporalPathRecord.getRecordsFromSolutionList(result, db, graph.getGranularity());
     }

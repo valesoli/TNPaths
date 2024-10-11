@@ -50,7 +50,7 @@ public class PathsAlgorithmAttribute extends AbstractAlgorithm<List<IntervalNode
     }
 
     public PathsAlgorithmAttribute setInitialNode(Node initialNode) {
-        this.log.info(String.format("Initial node: %s.", initialNode));
+        //this.log.info(String.format("Initial node: %s.", initialNode));
         this.initialNode = initialNode;
         return this;
     }
@@ -60,7 +60,7 @@ public class PathsAlgorithmAttribute extends AbstractAlgorithm<List<IntervalNode
     }
     
     public PathsAlgorithmAttribute setEndingNode(Node endingNode) {
-        this.log.info(String.format("Ending node: %s.", endingNode));
+        //this.log.info(String.format("Ending node: %s.", endingNode));
         this.strategy.setEndingNode(endingNode);
         return this;
     }
@@ -73,9 +73,7 @@ public class PathsAlgorithmAttribute extends AbstractAlgorithm<List<IntervalNode
     public List<IntervalNodePairPath> run() {
     	
     	Node inode = getInitialNode();
-    	System.out.println(inode.getId());
-
-    	if (!inode.getProperty("title").equals("Sensor")){
+       	if (!inode.getProperty("title").equals("Sensor")){
     		System.out.println("Must start from a Sensor Node");
     		return null;
     	}
@@ -91,31 +89,23 @@ public class PathsAlgorithmAttribute extends AbstractAlgorithm<List<IntervalNode
     		}
     		else
     			return null;
-    	//Initialize with the search interval so far       
-        
+    	//Initialize with the search interval so far         
         while (!this.strategy.isFinished()) {
         
         	IntervalNodePairPath currentPair = this.strategy.getNext();
             Node nodo = this.db.getNodeById(currentPair.getNode());
-            System.out.println(nodo.toString());
-            
-        
+                      
             List<Pair<List<Interval>, Long>> lista = this.graph.getRelationshipsFromNode(currentPair.getNode());
             
             for(Pair<List<Interval>, Long> interval:lista) {
-            	System.out.println("Is valid sensor?"+interval.getRight().toString());
+            	
             	isSensor = isValidSensor(db.getNodeById(interval.getRight()),inte);
             	//Is this a Sensor Node?
             	if (isSensor != null){
-            		System.out.println("It is");
             		IntervalSet new_inte = this.IntervalSensor(isSensor,inte);
-            		//inte = this.IntervalSensor(isSensor,new IntervalSet(this.graph.getBetweenInterval()));
-            		if (!new_inte.isEmpty()){
-            			System.out.println("inte: "+ new_inte.toString());
+            		if (!new_inte.isEmpty())
             			this.strategy.expandFrontierSensor(new_inte.getIntervals(), currentPair, interval.getRight());
-            			}
 	            	}
-                
             	else
             		this.strategy.expandFrontier(currentPair.getIntervalSet().getIntervals(), currentPair, interval.getRight());
             }            
@@ -129,11 +119,8 @@ public class PathsAlgorithmAttribute extends AbstractAlgorithm<List<IntervalNode
     		
     		String sss = (String) node.getProperty("title");
     		if (sss.equals("Sensor")) {
-    			System.out.println("El title es: " + sss);
     			IntervalSet iset = new IntervalSet(IntervalParser.entityToIntervals(node));
     			IntervalSet s1 = searchIntervalSet.intersection(iset);
-    			System.out.println(iset.toString());
-    			System.out.println(s1.toString());
     			if (!s1.isEmpty()){
     				Long na = measuresVariable(node, searchIntervalSet);
     				if (na != null)
@@ -156,7 +143,6 @@ public class PathsAlgorithmAttribute extends AbstractAlgorithm<List<IntervalNode
         for (Relationship n1:n){
         	
         	Node na = this.db.getNodeById(n1.getEndNodeId());
-        	System.out.println("na: " + na.toString());
         	if (na.getProperty("title").equals(this.strategy.getAttribute())){
         		List<Interval> inter = IntervalParser.fromStringArrayToIntervals((String []) na.getProperty("interval"));
         		IntervalSet itemp = new IntervalSet(inter);
@@ -176,14 +162,12 @@ public class PathsAlgorithmAttribute extends AbstractAlgorithm<List<IntervalNode
    			for (Relationship n2:nvs){
 	           	
 	           	Node nv = this.db.getNodeById(n2.getEndNodeId());
-	           	System.out.println("category: " + nv.getProperty("category").toString());
-	           	/*switch (this.strategy.getOp()){
-	           	case "=":*/
+
 	           		if (nv.getProperty("category")== this.strategy.getValue()){
 	           			found = true;
 		           		List<Interval> inter = IntervalParser.fromStringArrayToIntervals((String []) nv.getProperty("interval"));		           		
 		           		is = new IntervalSet(inter);
-		           		System.out.println("is: " + is.toString());
+		           		
 		           		return is;
 		           		//break;
 		           	}
@@ -199,7 +183,7 @@ public class PathsAlgorithmAttribute extends AbstractAlgorithm<List<IntervalNode
 	           	*/
 	           	
                }
-   		System.out.println(found);
+   		
    	    if (found) return is;
    	    else return new IntervalSet();
    			

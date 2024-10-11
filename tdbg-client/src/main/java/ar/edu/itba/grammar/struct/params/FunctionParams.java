@@ -81,6 +81,10 @@ public class FunctionParams {
         public void withDelta(final String delta) {
         	procedureConfiguration.addDelta(delta);
         }
+        
+        public void withExclude(final String excludeList) {
+        	procedureConfiguration.addExclude(excludeList);
+        }
 
         public FunctionParams build() {
             FunctionParams functionParams = new FunctionParams();

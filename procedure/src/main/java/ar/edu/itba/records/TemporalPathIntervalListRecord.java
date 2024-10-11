@@ -107,7 +107,7 @@ public class TemporalPathIntervalListRecord {
                 }
                 path = previousPath;
                 totalLength--;
-                System.out.println(previousPath.toString());
+
         	}
         	
         }
@@ -121,7 +121,6 @@ public class TemporalPathIntervalListRecord {
         int numberOfSensors = path.getLength().intValue();
         int totalLength = path.getTotalLength().intValue();
         List<IntervalTree> intervalTrees = new LinkedList<>();
-        System.out.println("number of sensors"+String.valueOf(numberOfSensors));
         switch (numberOfSensors){
         case 0:
         	return new LinkedList<>();
@@ -180,7 +179,7 @@ public class TemporalPathIntervalListRecord {
         int numberOfSensors = path.getLength().intValue();
         int totalLength = path.getTotalLength().intValue();
         List<IntervalTree> intervalTrees = new LinkedList<>();
-        //System.out.println(path.getIntervalSet().toString());
+
         switch (numberOfSensors){
         case 0:
         	return new LinkedList<>();
@@ -282,7 +281,6 @@ public class TemporalPathIntervalListRecord {
         return paths.parallelStream().filter(Objects::nonNull).map(path -> {
             LinkedList<NodeSensorRecord> nodes = new LinkedList<>();
             IntervalNodePairPathSensor current = path;
-            System.out.println("Cada path "+ path.toString());
             while (current != null) {
                 nodes.addFirst(new NodeSensorRecord(db.getNodeById(current.getNode()),current.isSensor(), current.getCategory()));
                 current = current.getPrevious();
@@ -293,7 +291,6 @@ public class TemporalPathIntervalListRecord {
                             new IntervalIntersectionAttributesSerializer(path.getIntervalSet().getIntervals()), db):
                             	NodeSensorSerialization.fromNotSensorNode(node.getNode(),db)))
                     .collect(Collectors.toList());
-            System.out.println("Sale del while "+path.toString());
             return new TemporalPathIntervalListRecord(
                     serializedNodes,
                     getIntervalsFromSensorPath(path, granularity)
@@ -306,14 +303,12 @@ public class TemporalPathIntervalListRecord {
         return paths.parallelStream().filter(Objects::nonNull).map(path -> {
             LinkedList<NodeSensorRecord> nodes = new LinkedList<>();
             IntervalNodePairPathSensor current = path;
-            System.out.println("Consecutive "+ path.toString());
             while (current != null) {
                 nodes.addFirst(new NodeSensorRecord(db.getNodeById(current.getNode()),
                 		current.isSensor(),
                 		current.getCategory()));
                 current = current.getPrevious();
             }
-            System.out.println("Sale del while "+nodes.toString());
             List<Map<String, Object>> serializedNodes = nodes.stream()
                     .map(node -> ((node.isSensor())? NodeSensorSerialization.fromNode(node.getNode(),
                             new IntervalIntersectionAttributesSerializer(path.getIntervalSet().getIntervals()), db)
@@ -331,11 +326,10 @@ public class TemporalPathIntervalListRecord {
         return paths.parallelStream().filter(Objects::nonNull).map(path -> {
             LinkedList<NodeSensorRecord> nodes = new LinkedList<>();
             IntervalNodePairPathSensor current = path;
-            System.out.println("Cada path "+ path.toString());
+        
             while (current != null) {
             	NodeSensorRecord nsr = new NodeSensorRecord(db.getNodeById(current.getNode()),
             			current.isSensor(), current.getCategory(), current.getIntervalSet()); 
-            	System.out.println("nsr "+ current.toString1() );
                 nodes.addFirst(nsr);
                 current = current.getPrevious();
             }

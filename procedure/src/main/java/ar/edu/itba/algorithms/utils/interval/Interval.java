@@ -30,34 +30,34 @@ public class Interval {
 
     public Interval(DateTime start, DateTime end) {
         this.start = start.toEpochSecond(false);
-        this.end = end.toEpochSecond(true);
+        this.end = end.toEpochSecond(false);
         this.granularity = Granularity.DATETIME;
         this.checkTime();
     }
 
     public Interval(Date start, Date end) {
         this.start = start.toEpochSecond(false);
-        this.end = end.toEpochSecond(true);
+        this.end = end.toEpochSecond(false);
         this.granularity = Granularity.DATE;
         this.checkTime();
     }
 
     public Interval(YearMonth start, YearMonth end) {
         this.start = start.toEpochSecond(false);
-        this.end = end.toEpochSecond(true);
+        this.end = end.toEpochSecond(false);
         this.granularity = Granularity.YEAR_MONTH;
         this.checkTime();
     }
 
     public Interval(Year start, Year end) {
         this.start = start.toEpochSecond(false);
-        this.end = end.toEpochSecond(true);
+        this.end = end.toEpochSecond(false);
         this.granularity = Granularity.YEAR;
         this.checkTime();
     }
 
     public void checkTime() {
-        if (this.end < this.start) {
+        if (this.end <= this.start) {
             throw new IllegalStateException(
                     "The finish time of the interval " + this.toString() + " is earlier than the starting time");
         }
@@ -67,9 +67,11 @@ public class Interval {
         if (other == null) { return Optional.of(this); }
         Long start = this.start.compareTo(other.start) >= 0 ? this.start : other.start;
         Long end = this.end.compareTo(other.end) <= 0 ? this.end : other.end;
-        if (start.compareTo(end) <= 0) {
-            return Optional.of(
-                    new Interval(start, end, this.granularity.getSmallerGranularity(other.granularity), this.isNow() && other.isNow()));
+        
+        if (start.compareTo(end) < 0) {
+        	return Optional.of(
+                    new Interval(start, end, this.granularity.getSmallerGranularity(other.granularity), 
+                    		this.isNow() && other.isNow()));
         } else {
             return Optional.empty();
         }
@@ -233,5 +235,10 @@ public class Interval {
         return this.start <= newInterval.start && this.end >= newInterval.end;
     }
     
-   
+   public static void main(String[] args) {
+	   Interval interval = new Interval(new Year(2020), new Year(2022));
+	   Interval interval2 = new Interval(new Year(2022), new Year(2024));
+	   System.out.println(interval);
+	   System.out.println(interval.intersection(interval2));
+   }
 }

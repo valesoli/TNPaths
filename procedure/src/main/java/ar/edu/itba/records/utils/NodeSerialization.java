@@ -34,8 +34,7 @@ public class NodeSerialization {
 	Map<String, Object> serialization = new LinkedHashMap<>();
 	serialization.put("vhas", node.getProperty("vhas"));
 	serialization.put("name", node.getProperty("name"));
-	System.out.print("fromSensorNode");
-	System.out.println(attributesSerializer.toString());
+	
 	return serialization;
 	}
     
@@ -43,8 +42,6 @@ public class NodeSerialization {
             GraphDatabaseService db) {
 	Map<String, Object> serialization = new LinkedHashMap<>();
 	serialization.put("vhas", node.getProperty("vhas"));
-	System.out.print("fromNotSensorNode");
-	System.out.println(attributesSerializer.toString());
 	return serialization;
 	}
     

@@ -299,37 +299,45 @@ public class GrammarListener extends TempoGraphBaseListener {
 
     @Override
     public void enterVariable_length(TempoGraphParser.Variable_lengthContext ctx) {
-        if (ctx.DOUBLE_DOT() != null) {
-            Integer lowerBound;
-            Integer upperBound;
-            if (ctx.U_INTEGER().size() == 1) {
-                lowerBound = 1;
-                upperBound  = Integer.parseInt(ctx.U_INTEGER(0).getText());
-            } else if (ctx.U_INTEGER().size() == 2) {
-                lowerBound = Integer.parseInt(ctx.U_INTEGER(0).getText());
-                upperBound  = Integer.parseInt(ctx.U_INTEGER(1).getText());
-            } else
-            return; //Should not happen
-            if (cyOut.getState() == QueryState.MATCH)
-                cacheableContent.setMatchRelationBounds(lowerBound, upperBound);
-            else if (cyOut.getState() == QueryState.WHEN)
-                cacheableContent.setWhenRelationBounds(lowerBound, upperBound);
-            else if (cyOut.getState() == QueryState.CALL && cyOut.getFunctionType() == FunctionType.CPATH)
-                cacheableContent.setCpathRelationBounds(lowerBound, upperBound);
-
-        }
-        else {
-            Integer distance = Integer.parseInt(ctx.U_INTEGER(0).getText());
-            if (cyOut.getState () == QueryState.MATCH)
-                cacheableContent.setMatchRelationBounds(distance, distance);
-            else if (cyOut.getState() == QueryState.WHEN)
-                cacheableContent.setWhenRelationBounds(distance, distance);
-        }
+    	System.err.println(ctx.U_INTEGER().size());
+    	if (ctx.U_INTEGER().size() != 0) {
+    		
+	        if (ctx.DOUBLE_DOT() != null) {
+	            Integer lowerBound;
+	            Integer upperBound;
+	            if (ctx.U_INTEGER().size() == 1) {
+	                lowerBound = 1;
+	                upperBound  = Integer.parseInt(ctx.U_INTEGER(0).getText());
+	            } else if (ctx.U_INTEGER().size() == 2) {
+	                lowerBound = Integer.parseInt(ctx.U_INTEGER(0).getText());
+	                upperBound  = Integer.parseInt(ctx.U_INTEGER(1).getText());
+	            } else
+	            return; //Should not happen
+	            if (cyOut.getState() == QueryState.MATCH)
+	                cacheableContent.setMatchRelationBounds(lowerBound, upperBound);
+	            else if (cyOut.getState() == QueryState.WHEN)
+	                cacheableContent.setWhenRelationBounds(lowerBound, upperBound);
+	            else if (cyOut.getState() == QueryState.CALL && cyOut.getFunctionType() == FunctionType.CPATH)
+	                cacheableContent.setCpathRelationBounds(lowerBound, upperBound);
+	            	if (cyOut.getState() == QueryState.CALL && cyOut.getFunctionType() == FunctionType.ALPHA) {
+	            		cacheableContent.setCpathRelationBounds(lowerBound, upperBound);
+	            	}
+	            
+	        }
+	        else 
+	        	{
+		            Integer distance = Integer.parseInt(ctx.U_INTEGER(0).getText());
+		            if (cyOut.getState () == QueryState.MATCH)
+		                cacheableContent.setMatchRelationBounds(distance, distance);
+		            else if (cyOut.getState() == QueryState.WHEN)
+		                cacheableContent.setWhenRelationBounds(distance, distance);
+	        }
+    	}
     }
 
     @Override
     public void enterCondition(TempoGraphParser.ConditionContext ctx) {
-        if (ctx.where_fcall_bool() == null) {
+        if ((ctx.where_fcall_bool() == null) && (ctx.sncondition() == null) ) {
             Set<String> conditionVariables = new HashSet<>();
             aliasesInWhere = new HashSet();
             helper.addConditionVariables(ctx.value(0), conditionVariables, aliasesVariable, aliasesInWhere);
@@ -342,7 +350,7 @@ public class GrammarListener extends TempoGraphBaseListener {
 
     @Override
     public void exitCondition(TempoGraphParser.ConditionContext ctx) {
-        if (ctx.where_fcall_bool() == null) {
+        if ((ctx.where_fcall_bool() == null) && (ctx.sncondition() == null)){
             for (Token token : aliasesInWhere)
                 ((CommonToken) token).setText(token.getText() + CharConstants.POINT + CypherOutputGenerator.VALUE.toLowerCase());
             currentWhereCondition.setCondition(ctx.getText());
@@ -365,10 +373,27 @@ public class GrammarListener extends TempoGraphBaseListener {
             else
                 removeNextConnector = true;
         }
+        
+        if (cyOut.getState() != QueryState.WHEN && ctx.sncondition() != null) {
+
+           //remove function call from where
+            ctx.children.clear();
+
+            //remove connector
+            if (connectorContext != null)
+                connectorContext.children.clear();
+            else
+                removeNextConnector = true;
+        }
     }
 
 	@Override public void exitSncondition(TempoGraphParser.SnconditionContext ctx) { 
-		
+	
+		functionParamsBuilder.withAttribute(ctx.all_fstruct().WORD().toString());
+		functionParamsBuilder.withCategory(ctx.value().getText());
+		functionParamsBuilder.withOperator(ctx.relop().getText());
+		     
+		cyOut.unsetFunctionType();
 	}
 	
     @Override public void enterWhere_connector(TempoGraphParser.Where_connectorContext ctx) {
@@ -438,7 +463,12 @@ public class GrammarListener extends TempoGraphBaseListener {
     public void enterSkip_clause(TempoGraphParser.Skip_clauseContext ctx) {
         cyOut.skipAppend(ctx.getText());
     }
-
+    
+    @Override public void exitExclude_clause(TempoGraphParser.Exclude_clauseContext ctx) { 
+    	functionParamsBuilder.withExclude(ctx.U_INTEGER().toString());
+        cyOut.unsetFunctionType();
+    	
+    }
     @Override
     public void enterLimit_clause(TempoGraphParser.Limit_clauseContext ctx) {
         cyOut.limitAppend(ctx.getText());
@@ -485,9 +515,9 @@ public class GrammarListener extends TempoGraphBaseListener {
     	cyOut.setFunctionType(FunctionType.FPATH);
     }
     
-    public void enterSnalphapath(TempoGraphParser.SnalphapathContext ctx)
+    public void enterAlphapath(TempoGraphParser.AlphapathContext ctx)
     {
-        cyOut.setFunctionType(FunctionType.SNALPHA);
+        cyOut.setFunctionType(FunctionType.ALPHA);
     }
 	
 	
@@ -509,6 +539,7 @@ public class GrammarListener extends TempoGraphBaseListener {
         String functionName;
         if (ctx.CPATH() != null) functionName = ctx.CPATH().getText();
         else if (ctx.CPATH2() != null) functionName = ctx.CPATH2().getText();
+        
         else functionName = ctx.PAIRCPATH().getText();
 
         if (!(ctx.parent instanceof TempoGraphParser.F_callContext))
@@ -532,12 +563,9 @@ public class GrammarListener extends TempoGraphBaseListener {
          
     	 if (ctx.FBPATH() != null) functionName = ctx.FBPATH().getText();
          else 
-        	 if (ctx.RSCPATH() != null) functionName = ctx.RSCPATH().getText();
-         /*else if (ctx.SNALPHAPATH() != null) {
-        	 functionName = ctx.SNALPHAPATH().getText();
-        	 cyOut.setFunctionType(FunctionType.CPATH);
-         }*/
-         	else functionName = ctx.FPATH().getText();
+        	 if (ctx.SNCPATH() != null) functionName = ctx.SNCPATH().getText();
+         
+         		else functionName = ctx.FPATH().getText();
     	 
          if (!(ctx.parent instanceof TempoGraphParser.F_callContext))
              functionName += CypherOutputGenerator.BOOL;
@@ -546,48 +574,37 @@ public class GrammarListener extends TempoGraphBaseListener {
          if (ctx.interval_arg() ==  null)
              return; 
          
-         final String var = Utils.getQuotedString(ctx.attribute().getText() );
-         final String op = Utils.getQuotedString(ctx.operator().getText() );
-         final String cate = Utils.getQuotedString(ctx.category().getText() );
-         final String period = Utils.getQuotedString(ctx.delta().getText() );
+         if (ctx.delta() != null)
+         	functionParamsBuilder.withDelta(Utils.getQuotedString(ctx.delta().getText() ));
+        
          final String from = Utils.getQuotedString(ctx.interval_arg().time_value().getText());
          final String to = Utils.getQuotedString(ctx.interval_arg().time_value_with_now().getText());
          final String invalidIntervalMessage = Utils.generateErrorMessage("invalid time range in " + functionName + " call", ctx.interval_arg().COMMA().getSymbol());
          final Pair<String, String> interval = helper.getTimeInterval(from, to, invalidIntervalMessage);
          cacheableContent.setCpathInterval(interval);
          functionParamsBuilder.withTemporalInterval(cyOut.generateInterval(interval.getLeft(), interval.getRight()));
-         functionParamsBuilder.withAttribute(var);
-         functionParamsBuilder.withOperator(op);
-         functionParamsBuilder.withCategory(cate);
-         functionParamsBuilder.withDelta(period);
          cyOut.unsetFunctionType();
      }
 
-    @Override public void exitSnalphapath(TempoGraphParser.SnalphapathContext ctx) { 
+    @Override public void exitAlphapath(TempoGraphParser.AlphapathContext ctx) { 
     	
-   	 	String functionName = ctx.SNALPHAPATH().getText();
-       	 
-        if (!(ctx.parent instanceof TempoGraphParser.F_callContext))
-            functionName += CypherOutputGenerator.BOOL;
+   	 	String functionName;
+   	 	if (ctx.ALPHAPATH() != null) functionName = ctx.ALPHAPATH().getText();
+   	 	else functionName = ctx.SNALPHAPATH().getText();
         helper.validatePathArg(functionName, objectVariables, ctx.endpoints_args(), true);
         functionParamsBuilder = helper.handleFunction(functionName,functionVariableName, ctx.endpoints_args());
         if (ctx.interval_arg() ==  null)
             return; 
+       
+        if (ctx.delta() != null)
+        	functionParamsBuilder.withDelta(Utils.getQuotedString(ctx.delta().getText() ));
         
-        final String var = Utils.getQuotedString(ctx.attribute().getText() );
-        final String op = Utils.getQuotedString(ctx.operator().getText() );
-        final String cate = Utils.getQuotedString(ctx.category().getText() );
-        final String period = Utils.getQuotedString(ctx.delta().getText() );
         final String from = Utils.getQuotedString(ctx.interval_arg().time_value().getText());
         final String to = Utils.getQuotedString(ctx.interval_arg().time_value_with_now().getText());
         final String invalidIntervalMessage = Utils.generateErrorMessage("invalid time range in " + functionName + " call", ctx.interval_arg().COMMA().getSymbol());
         final Pair<String, String> interval = helper.getTimeInterval(from, to, invalidIntervalMessage);
         cacheableContent.setCpathInterval(interval);
         functionParamsBuilder.withTemporalInterval(cyOut.generateInterval(interval.getLeft(), interval.getRight()));
-        functionParamsBuilder.withAttribute(var);
-        functionParamsBuilder.withOperator(op);
-        functionParamsBuilder.withCategory(cate);
-        functionParamsBuilder.withDelta(period);
         cyOut.unsetFunctionType();
     }
     

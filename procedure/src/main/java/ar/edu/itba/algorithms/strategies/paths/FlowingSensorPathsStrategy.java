@@ -87,13 +87,8 @@ public class FlowingSensorPathsStrategy extends IntervalSetPathSensorStrategy {
             return;
         }
        
-        System.out.println("Estoy expandiendo el nodo "+node.toString() +" que va al nodo común" + otherNodeId.toString() );
-        
         IntervalNodePairPathSensor path;
-        System.out.println("node.getIntervalSet "+ node.getIntervalSet().toString());
     	path = new IntervalNodePairPathSensor(otherNodeId, node.getIntervalSet(), false, node.getCategory(),node.getLength(),(node.getTotalLength() + 1 ), false );
-    	System.out.println("El path que voy a sumar "+path.toString1());
-        
         path.setPrevious(node);
         Set<Long> previousNodes = node.copyPreviousNodes();
         previousNodes.add(otherNodeId);
@@ -107,8 +102,6 @@ public class FlowingSensorPathsStrategy extends IntervalSetPathSensorStrategy {
             return;
         }
        
-        System.out.println("Estoy expandiendo el nodo: "+node.toString()+" que va al nodo sensor " + otherNodeId.toString() );
-         	      
     	IntervalNodePairPathSensor path;
     	
         path = new IntervalNodePairPathSensor(otherNodeId, new IntervalSet(intervalS), true, newCategory, (node.getLength() + 1 ), (node.getTotalLength() + 1 )); 
@@ -147,11 +140,8 @@ public Long measuresVariable(Node nodo)  {
 	
 	Iterable<Relationship> n = nodo.getRelationships( RelationshipType.withName( "Edge" ), Direction.OUTGOING );
     for (Relationship n1:n){
-    	
     	Node na = this.db.getNodeById(n1.getEndNodeId());
-    	
     	if (na.getProperty("title").equals(this.getAttribute())){
-    		System.out.println("na: " + na.toString());
     		return na.getId();
     	}
      }
@@ -164,38 +154,22 @@ public Long measuresVariable(Node nodo, IntervalSet searchInterval)  {
     for (Relationship n1:n){
     	
     	Node na = this.db.getNodeById(n1.getEndNodeId());
-    	System.out.println("na: " + na.toString());
-    	
-    	System.out.println(na.getProperty("title") );
     	if (na.getProperty("title").equals(this.getAttribute())){
-    		System.out.println("search interval: " + searchInterval.toString());
     		List<Interval> inter = IntervalParser.fromStringArrayToIntervals((String []) na.getProperty("interval"));
     		IntervalSet itemp = new IntervalSet(inter);
     		
     		if (!itemp.intersection(searchInterval).isEmpty())
     			retVal = na.getId();
-    			System.out.println("retVal: " + retVal.toString());
     	}
      }
     return retVal;
 }
-/*private IntervalSet getSensorsIntersection(IntervalNodeSensorPair lastSensor, Node otherNode){
-	IntervalSet valInterval = getValueIntervals(getAttributeId(otherNode));
-	return valInterval.intersectAndReturnThisIntervals(lastSensor.getIntervalSet());
-	
-}
-*/
 
-/*public Pair<IntervalSet,Long> getValueIntervalFromSensor(Node node, Long prevCategory, Interval interval){
-	return getValueIntervals(getAttributeId(node), prevCategory, interval);
-	
-}*/
 public Pair<IntervalSet,Long> getValueIntervals(Long attId, Long prev, Interval interval, Interval searchInterval  ) {
 	Node na = this.db.getNodeById(attId);
 	Long cate = 0L;
 	Pair<IntervalSet,Long> closest = new Pair<>(null,prev);
 	Iterable<Relationship> nvs = na.getRelationships( RelationshipType.withName( "Edge" ), Direction.OUTGOING );
-	System.out.println("Termina inicializacion" + attId.toString());
 	for (Relationship n2:nvs){       	
            	Node nv = this.db.getNodeById(n2.getEndNodeId());
            	cate = (Long) nv.getProperty("category");
@@ -203,7 +177,6 @@ public Pair<IntervalSet,Long> getValueIntervals(Long attId, Long prev, Interval 
            	case "up":          		    		
            		if (cate >= prev)
            			closest = getClosestPairForward(nv,closest,interval,searchInterval,cate);
-           		System.out.println("closest "+ closest.toString());
            		break;
         	case "=":          		    		
            		if (cate == this.getValue())
@@ -259,7 +232,6 @@ public Pair<IntervalSet,Long> getValueFirstIntervalB(Long attId, Long value, Int
            		
            	}       	
            }
-	System.out.println(closest.toString());
 		    return closest;	
 	   	}
 
@@ -269,13 +241,9 @@ private Pair<IntervalSet,Long> getClosestPairForward(Node valueNode, Pair<Interv
 	boolean found = false;
 	Integer i = 0;
 	List<Interval> inter = IntervalParser.fromStringArrayToIntervals((String []) valueNode.getProperty("interval"));
-	System.out.println(inter.toString());
-	System.out.println(valueNode.getId());
-	System.out.println("Param closest: " + closest.toString());
 	while (i < inter.size() && !found){		
 		if (inter.get(i).getStart() > interval.getStart() && inter.get(i).isIntersecting(searchInterval)){
 			found=true;
-			System.out.println(inter.get(i));
 			if (closest.getKey()==null || inter.get(i).getStart() < closest.getKey().getLast().getStart())
 				{closest = new Pair<>(new IntervalSet(inter.get(i)),cate);
 				}

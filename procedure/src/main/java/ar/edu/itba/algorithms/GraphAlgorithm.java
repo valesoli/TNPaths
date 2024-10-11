@@ -23,7 +23,7 @@ public class GraphAlgorithm extends AbstractAlgorithm<GraphSaver> {
     }
 
     public GraphAlgorithm setInitialNode(Node initialNode) {
-        this.log.info(String.format("Initial node: %s.", initialNode));
+        //this.log.info(String.format("Initial node: %s.", initialNode));
         this.initialNode = initialNode;
         return this;
     }

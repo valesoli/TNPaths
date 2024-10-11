@@ -11,7 +11,7 @@ public class AllenInterval {
 	public AllenInterval(Interval intervalA, Interval intervalB){
 		this.intervalA = intervalA;
 		this.intervalB = intervalB;
-		this.al = get_rel(intervalA,intervalB);
+		AllenInterval.al = get_rel(intervalA,intervalB);
 	}
 	public Interval get_IntervalA(){
 		return this.intervalA;
@@ -20,7 +20,7 @@ public class AllenInterval {
 		return this.intervalB;
 	}
 	public allenRel get_allenRel(){
-		return this.al;
+		return AllenInterval.al;
 	}
 	private allenRel get_rel(Interval IntervalA, Interval IntervalB){
 		allenRel ar = allenRel.ALPHA13;
@@ -77,5 +77,7 @@ public class AllenInterval {
         AllenInterval ai = new AllenInterval(a,b);
         System.out.println(ai.get_allenRel());
         System.out.println( allenRel.getNameFromValue( getInverse( ai.get_allenRel()) ) );
+        
+     
 	}
 }

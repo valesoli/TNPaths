@@ -41,4 +41,10 @@ public class NodeSensorRecord {
    public IntervalSet getInterval(){
 	   return this.is;
    }
+   public String toString1() {
+	   
+		return "NodeSensor: " + this.node.toString() + " is Sensor: " 
+		+ this.isSensor() ;
+}
+   
 }
