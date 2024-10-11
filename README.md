@@ -22,8 +22,9 @@ You can find a compiled version in the utils folder.
 
 #### <h4 id=webapp>2. Prepare and execute the T-GQL webapp</h4>
 ##### a. Client configuration
->Compile and produce the client .jar (tdbg-client)
-> The client jar reads a configuration file, ```client.properties```. Indicate in this file the Neo4j password you are using.
+> Compile and produce the client .jar (tdbg-client).
+
+> The client jar reads a configuration file, ```client.properties```. The Neo4j password you are using must be included in this file.
 
 __Example of client.properties__
 ```properties
