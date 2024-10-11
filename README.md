@@ -10,9 +10,10 @@
    > In this work, we used Neo4j Community version 3.5.14. Once downloaded and extracted, you will find the folder
    <code>neo4j-community-3.5.14/data/databases</code>. 
    
-   > Copy one or all of the databases provided with this work (utils folder): _soc_net.db_, _Flighst.db_, _schelde_L60.db_, _schelde_G60.db_ and _schelde_G10.db_, and paste them in that folder.
-   Edit the  **conf/neo4j.conf** file and include the line:
-   ```dbms.active_database=schelde_G60.db``` (or any of the above mentioned databases)
+   > Copy one or all of the databases provided with this work (```utils``` folder in this repository): _soc_net.db_, _Flighst.db_, _schelde_L60.db_, _schelde_G60.db_ and _schelde_G10.db_, and paste them in the Neo4j database folder.
+  
+  > Edit the  **conf/neo4j.conf** file and include the line:
+   ```dbms.active_database=schelde_G60.db``` (or any of the above mentioned databases). 
    This command is available en Neo4j version 3.5.14. It is possible that for other versions, the line is slightly different.
 
   ##### b. Include the T-GQL plugin
