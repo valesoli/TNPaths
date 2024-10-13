@@ -6,7 +6,7 @@
 3. [Prepare and execute the T-GQL webapp](webapp)
 4. [Run queries](#run)
 
-You can read the instructions below or watch the following tutorial: [Installation tutorial](https://youtu.be/itnJYSCRf90)
+
 
 #### <h4 id=project>1. Clone or Download and unzip this project </h4>
 
