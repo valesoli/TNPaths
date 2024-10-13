@@ -1,11 +1,16 @@
 # Models and Query Languages for Temporal Graph Databases
 ## Test T-GQL Queries
 
-1. [Prepare and start Neo4j database](#neo4j)
-2. [Prepare and execute the T-GQL webapp](webapp)
-3. [Run queries](#run)
+1. [Clone or Download and unzipp this project](project)
+2. [Prepare and start Neo4j database](#neo4j)
+3. [Prepare and execute the T-GQL webapp](webapp)
+4. [Run queries](#run)
 
-#### <h4 id=neo4j>1. Prepare and start Neo4j database</h4>
+You can read the instructions below or watch the following tutorial: [Installation tutorial](https://youtu.be/itnJYSCRf90)
+
+#### <h4 id=project>1. Clone or Download and unzip this project </h4>
+
+#### <h4 id=neo4j>2. Prepare and start Neo4j database</h4>
    ##### a. Copy the database
    > In this work, we used Neo4j Community version 3.5.14. Once downloaded and extracted, you will find the folder
    <code>neo4j-community-3.5.14/data/databases</code>. 
@@ -17,15 +22,17 @@
    This command is available en Neo4j version 3.5.14. It is possible that for other versions, the line is slightly different.
 
   ##### b. Include the T-GQL plugin
-> Compile and produce the __procedure__  ```.jar``` file. Paste it in the Neo4j **plugins** folder.
-> We are ready to start the database. For example running in bash terminal: ```bin/neo4j.bat console```
-You can find a compiled version in the utils folder.
+> You can copy the _procedure-1.0.jar_ file from the __utils__ folder or compile it and produce it. Paste it in the Neo4j **plugins** folder.
+> We are ready to start the database. For our Neo4j version, run into a bash terminal, in the neo4j folder, the following command line:
 
-#### <h4 id=webapp>2. Prepare and execute the T-GQL webapp</h4>
+```bin/neo4j.bat console```
+
+
+#### <h4 id=webapp>3. Prepare and execute the T-GQL webapp</h4>
 ##### a. Client configuration
-> Compile and produce the client .jar (tdbg-client).
+> You can find the _client-1.0.jar_ file into the __utils__ folder. Alternatively, you can compile and produce it (tdbg-client). 
 
-> The client jar reads a configuration file, ```client.properties```. The Neo4j password you are using must be included in this file.
+> The client jar reads a configuration file, ```client.properties``` which can also be found in the __utils__ folder. The Neo4j password you are using must be included in this file.
 
 __Example of client.properties__
 ```properties
@@ -59,7 +66,7 @@ Then open a web browser:  <localhost:7000>.
 From IDE:
 Use  `Main.main()` as access point. The app will connect to <localhost:7000>.
 
-### <h4 id=run>3. Run queries</h4>
+### <h4 id=run>4. Run queries</h4>
 
 The following are query examples that you can copy & paste into the webapp and test. Please, make sure to use the appropiate database for each case.
 
