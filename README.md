@@ -41,7 +41,7 @@ __Example of client.properties__
 database.bolt.host=localhost
 database.bolt.port=7687
 database.username=neo4j
-database.password=admin
+database.password=neo4j
 webapp.port = 7000
 socialNetwork.persons=50
 socialNetwork.maxFriendships=5
