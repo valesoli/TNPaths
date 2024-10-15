@@ -184,3 +184,7 @@ Figure 6.11
 MATCH (p1:Sensor), (p2:Sensor),  p=SNalphaPath((p1) <- [f:flowsTo*8..8] - (p2),'2022-04-01 23:00','2022-04-02 11:00')
 WHERE p1.Name = 'zes01a-SF-1066'
 AND ALL p.attribute.ec=2</code>
+
+
+This T-GQL Project was originally started as a final year project by Ariel Debrouvier, Eliseo Parodi Almaraz and  Matías Perazzo at ITBA.
+Our thanks to them.
