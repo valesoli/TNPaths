@@ -1,7 +1,7 @@
 # Models and Query Languages for Temporal Graph Databases
 ## Test T-GQL Queries
 
-A "ready to run" set up can be found in the following Google drive [link](https://drive.google.com/drive/folders/10EcvD5sn74iurgztyBipxZ3jr-Dt-vSY?usp=sharing). It is necessary to run Java commands from a terminal. Find the instructions in this [tutorial](https://youtu.be/q0kJco8DYvs) or you can follow the steps below to proceed with the installation.
+A "ready to run" set up can be found in the following Google drive [link](https://drive.google.com/drive/folders/10EcvD5sn74iurgztyBipxZ3jr-Dt-vSY?usp=sharing). It is necessary to run Java commands from a terminal. Find the windows instructions in this [tutorial](https://youtu.be/q0kJco8DYvs) or you can follow the steps below to proceed with the installation.
 
 1. [Clone or Download and unzipp this project](project)
 2. [Prepare and start Neo4j database](#neo4j)
