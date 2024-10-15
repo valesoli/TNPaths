@@ -3,6 +3,8 @@
 
 A "ready to run" set up can be found in the following Google drive [link](https://drive.google.com/drive/folders/10EcvD5sn74iurgztyBipxZ3jr-Dt-vSY?usp=sharing). It is necessary to run Java commands from a terminal. Find the windows instructions in this [tutorial](https://youtu.be/q0kJco8DYvs) or you can follow the steps below to proceed with the installation.
 
+We are using Java verion 11.
+
 1. [Clone or Download and unzipp this project](project)
 2. [Prepare and start Neo4j database](#neo4j)
 3. [Prepare and execute the T-GQL webapp](webapp)
